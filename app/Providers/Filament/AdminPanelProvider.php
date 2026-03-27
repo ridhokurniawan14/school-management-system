@@ -32,6 +32,8 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Teal,
             ])
             ->brandName('SMS — School Management')
+            ->databaseNotifications() // ← tambah ini
+            ->databaseNotificationsPolling('5s') // ← auto poll notif
             ->navigationGroups([
                 // ─── Data Master ─────────────────────────────────────────────
                 NavigationGroup::make('Data Sekolah')

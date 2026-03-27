@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Teachers;
 
 use App\Filament\Imports\TeacherImporter;
+use App\Filament\Resources\Concerns\HasDocumentsTab;
 use App\Filament\Resources\Teachers\Pages\CreateTeacher;
 use App\Filament\Resources\Teachers\Pages\EditTeacher;
 use App\Filament\Resources\Teachers\Pages\ListTeachers;
@@ -15,7 +16,6 @@ use Filament\Actions\ImportAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
-
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
@@ -28,6 +28,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
@@ -36,6 +37,8 @@ use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 class TeacherResource extends Resource
 {
+    use HasDocumentsTab;
+
     protected static ?string $model = Teacher::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user-circle';
@@ -52,6 +55,7 @@ class TeacherResource extends Resource
                 Tabs::make('teacher_tabs')
                     ->tabs([
 
+                        // ── Tab 1: Data Pribadi ───────────────────────────
                         Tab::make('Data Pribadi')
                             ->icon('heroicon-o-user')
                             ->schema([
@@ -134,6 +138,7 @@ class TeacherResource extends Resource
                                     ]),
                             ]),
 
+                        // ── Tab 2: Kontak ─────────────────────────────────
                         Tab::make('Kontak')
                             ->icon('heroicon-o-phone')
                             ->schema([
@@ -152,7 +157,7 @@ class TeacherResource extends Resource
                                             ->placeholder('ahmad.fauzi@smkpgri1giri.sch.id')
                                             ->helperText('Email ini digunakan sebagai akun login sistem.')
                                             ->email()
-                                            ->required()
+                                            ->required()           // ← wajib
                                             ->unique(ignoreRecord: true)
                                             ->maxLength(255),
 
@@ -164,6 +169,7 @@ class TeacherResource extends Resource
                                     ]),
                             ]),
 
+                        // ── Tab 3: Foto ───────────────────────────────────
                         Tab::make('Foto')
                             ->icon('heroicon-o-photo')
                             ->schema([
@@ -180,6 +186,9 @@ class TeacherResource extends Resource
                                     ]),
                             ]),
 
+                        // ── Tab 4: Berkas & Dokumen ───────────────────────
+                        self::makeDocumentsTab('documents/teachers'),
+
                     ])
                     ->columnSpanFull()
                     ->persistTabInQueryString(),
@@ -189,6 +198,7 @@ class TeacherResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->poll('3s')
             ->columns([
                 ImageColumn::make('photo')
                     ->label('')
@@ -204,12 +214,6 @@ class TeacherResource extends Resource
 
                 TextColumn::make('nip')
                     ->label('NIP')
-                    ->searchable()
-                    ->placeholder('-')
-                    ->toggleable(),
-
-                TextColumn::make('nuptk')
-                    ->label('NUPTK')
                     ->searchable()
                     ->placeholder('-')
                     ->toggleable(),
@@ -230,7 +234,7 @@ class TeacherResource extends Resource
                     ->color(fn(string $state): string => match ($state) {
                         'pns'     => 'success',
                         'p3k'     => 'info',
-                        'honorer' => 'gray',
+                        'honorer' => 'info',
                         'gty'     => 'success',
                         default   => 'gray',
                     })
@@ -250,7 +254,7 @@ class TeacherResource extends Resource
                     ->trueColor('success')
                     ->falseColor('gray'),
             ])
-            ->defaultSort('full_name', 'asc')
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 SelectFilter::make('employment_status')
                     ->label('Status Kepegawaian')
@@ -261,12 +265,11 @@ class TeacherResource extends Resource
                         'gty'     => 'GTY',
                     ]),
 
-                SelectFilter::make('is_active')
+                TernaryFilter::make('is_active')
                     ->label('Status Aktif')
-                    ->options([
-                        '1' => 'Aktif',
-                        '0' => 'Tidak Aktif',
-                    ]),
+                    ->trueLabel('Aktif')
+                    ->falseLabel('Tidak Aktif')
+                    ->placeholder('Semua'),
             ])
             ->actions([
                 EditAction::make(),
@@ -301,7 +304,6 @@ class TeacherResource extends Resource
             ]);
     }
 
-    // ── Kolom export lengkap — semua field penting ────────────────────────
     protected static function getExportColumns(): array
     {
         return [
@@ -350,5 +352,10 @@ class TeacherResource extends Resource
             'create' => CreateTeacher::route('/create'),
             'edit'   => EditTeacher::route('/{record}/edit'),
         ];
+    }
+    // Tambahkan method ini di TeacherResource
+    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return parent::getEloquentQuery()->where('role', 'teacher');
     }
 }

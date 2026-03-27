@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Staff;
 
 use App\Filament\Imports\StaffImporter;
+use App\Filament\Resources\Concerns\HasDocumentsTab;
 use App\Filament\Resources\Staff\Pages\CreateStaff;
 use App\Filament\Resources\Staff\Pages\EditStaff;
 use App\Filament\Resources\Staff\Pages\ListStaff;
@@ -15,7 +16,6 @@ use Filament\Actions\ImportAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
-
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
@@ -37,6 +37,8 @@ use pxlrbt\FilamentExcel\Exports\ExcelExport;
 
 class StaffResource extends Resource
 {
+    use HasDocumentsTab;
+
     protected static ?string $model = Teacher::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-briefcase';
@@ -110,7 +112,7 @@ class StaffResource extends Resource
                                         TextInput::make('nip')
                                             ->label('NIP')
                                             ->placeholder('197805152003121001')
-                                            ->helperText('Nomor Induk Pegawai — kosongkan jika honorer.')
+                                            ->helperText('Nomor Induk Pegawai — kosongkan jika tidak ada.')
                                             ->maxLength(30)
                                             ->unique(ignoreRecord: true),
 
@@ -176,6 +178,7 @@ class StaffResource extends Resource
                                             ->placeholder('staff@smkpgri1giri.sch.id')
                                             ->helperText('Email untuk akun login sistem.')
                                             ->email()
+                                            ->required()           // ← wajib
                                             ->unique(ignoreRecord: true)
                                             ->maxLength(255),
 
@@ -204,6 +207,9 @@ class StaffResource extends Resource
                                     ]),
                             ]),
 
+                        // ── Tab 4: Berkas & Dokumen ───────────────────────
+                        self::makeDocumentsTab('documents/staff'),
+
                     ])
                     ->columnSpanFull()
                     ->persistTabInQueryString(),
@@ -213,6 +219,7 @@ class StaffResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->poll('5s')
             ->columns([
                 ImageColumn::make('photo')
                     ->label('')
@@ -266,7 +273,7 @@ class StaffResource extends Resource
                     ->color(fn(string $state): string => match ($state) {
                         'pns'     => 'success',
                         'p3k'     => 'info',
-                        'honorer' => 'success',
+                        'honorer' => 'info',
                         'gty'     => 'success',
                         default   => 'gray',
                     })
@@ -287,7 +294,7 @@ class StaffResource extends Resource
                     ->trueColor('success')
                     ->falseColor('gray'),
             ])
-            ->defaultSort('full_name', 'asc')
+            ->defaultSort('created_at', 'desc')
             ->filters([
                 SelectFilter::make('role')
                     ->label('Jabatan')
