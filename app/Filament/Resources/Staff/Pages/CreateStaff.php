@@ -8,6 +8,7 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateStaff extends CreateRecord
 {
     protected static string $resource = StaffResource::class;
+
     protected static ?string $title = 'Tambah Staff';
 
     protected function getRedirectUrl(): string
@@ -19,6 +20,7 @@ class CreateStaff extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['role'] = 'staff';
+
         return $data;
     }
 }

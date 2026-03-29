@@ -11,11 +11,11 @@ return new class extends Migration
         Schema::create('internships', function (Blueprint $table) {
             $table->id();
             $table->foreignId('student_id')
-                  ->constrained('students')
-                  ->cascadeOnDelete();
+                ->constrained('students')
+                ->cascadeOnDelete();
             $table->foreignId('academic_semester_id')
-                  ->constrained('academic_semesters')
-                  ->cascadeOnDelete();
+                ->constrained('academic_semesters')
+                ->cascadeOnDelete();
 
             // Data Perusahaan / DUDI (Dunia Usaha Dunia Industri)
             $table->string('company_name');
@@ -27,9 +27,9 @@ return new class extends Migration
             // Pembimbing
             $table->string('supervisor_name')->nullable();   // pembimbing dari perusahaan
             $table->foreignId('teacher_supervisor_id')
-                  ->nullable()
-                  ->constrained('teachers')
-                  ->nullOnDelete();                          // guru pembimbing dari sekolah
+                ->nullable()
+                ->constrained('teachers')
+                ->nullOnDelete();                          // guru pembimbing dari sekolah
 
             // Periode PKL
             $table->date('start_date');

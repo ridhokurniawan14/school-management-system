@@ -7,6 +7,7 @@ use App\Models\Student;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\Models\Import;
+use Filament\Forms\Components\Select;
 
 class StudentImporter extends Importer
 {
@@ -99,15 +100,15 @@ class StudentImporter extends Importer
     public static function getOptionsFormComponents(): array
     {
         return [
-            \Filament\Forms\Components\Select::make('competency_id')
+            Select::make('competency_id')
                 ->label('Kompetensi Keahlian / Jurusan')
                 ->options(
-                    \App\Models\Competency::where('is_active', true)
+                    Competency::where('is_active', true)
                         ->with('major')
                         ->get()
-                        ->filter(fn($c) => $c->major !== null)
-                        ->mapWithKeys(fn($c) => [
-                            $c->id => $c->major->name . ' — ' . $c->name,
+                        ->filter(fn ($c) => $c->major !== null)
+                        ->mapWithKeys(fn ($c) => [
+                            $c->id => $c->major->name.' — '.$c->name,
                         ])
                 )
                 ->searchable()
@@ -123,7 +124,7 @@ class StudentImporter extends Importer
         ]);
 
         // Inject competency_id dari dropdown pilihan sebelum upload
-        if (!empty($this->options['competency_id'])) {
+        if (! empty($this->options['competency_id'])) {
             $student->competency_id = $this->options['competency_id'];
         }
 
@@ -132,10 +133,10 @@ class StudentImporter extends Importer
 
     public static function getCompletedNotificationBody(Import $import): string
     {
-        $body = 'Import data siswa selesai. ' . number_format($import->successful_rows) . ' data berhasil diimport.';
+        $body = 'Import data siswa selesai. '.number_format($import->successful_rows).' data berhasil diimport.';
 
         if ($failedRowsCount = $import->getFailedRowsCount()) {
-            $body .= ' ' . number_format($failedRowsCount) . ' data gagal diimport.';
+            $body .= ' '.number_format($failedRowsCount).' data gagal diimport.';
         }
 
         return $body;

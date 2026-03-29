@@ -5,15 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Classroom extends Model
 {
     protected $guarded = [];
 
     protected $casts = [
-        'is_active'  => 'boolean',
-        'grade'      => 'string',
-        'capacity'   => 'integer',
+        'is_active' => 'boolean',
+        'grade' => 'string',
+        'capacity' => 'integer',
     ];
 
     public function academicYear(): BelongsTo
@@ -35,7 +36,8 @@ class Classroom extends Model
     {
         return $this->hasMany(ClassroomStudent::class);
     }
-    public function students(): \Illuminate\Database\Eloquent\Relations\HasManyThrough
+
+    public function students(): HasManyThrough
     {
         return $this->hasManyThrough(
             Student::class,

@@ -8,6 +8,7 @@ use App\Filament\Resources\Teachers\Pages\CreateTeacher;
 use App\Filament\Resources\Teachers\Pages\EditTeacher;
 use App\Filament\Resources\Teachers\Pages\ListTeachers;
 use App\Models\Teacher;
+use Carbon\Carbon;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -16,8 +17,8 @@ use Filament\Actions\ImportAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
@@ -30,6 +31,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use pxlrbt\FilamentExcel\Columns\Column;
@@ -42,10 +44,15 @@ class TeacherResource extends Resource
     protected static ?string $model = Teacher::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user-circle';
+
     protected static string|\UnitEnum|null $navigationGroup = 'SDM';
+
     protected static ?string $navigationLabel = 'Data Guru';
+
     protected static ?int $navigationSort = 1;
+
     protected static ?string $modelLabel = 'Guru';
+
     protected static ?string $pluralModelLabel = 'Data Guru';
 
     public static function form(Schema $schema): Schema
@@ -87,7 +94,7 @@ class TeacherResource extends Resource
                                         Select::make('gender')
                                             ->label('Jenis Kelamin')
                                             ->options([
-                                                'male'   => 'Laki-laki',
+                                                'male' => 'Laki-laki',
                                                 'female' => 'Perempuan',
                                             ])
                                             ->required(),
@@ -95,11 +102,11 @@ class TeacherResource extends Resource
                                         Select::make('religion')
                                             ->label('Agama')
                                             ->options([
-                                                'islam'    => 'Islam',
-                                                'kristen'  => 'Kristen',
-                                                'katolik'  => 'Katolik',
-                                                'hindu'    => 'Hindu',
-                                                'budha'    => 'Buddha',
+                                                'islam' => 'Islam',
+                                                'kristen' => 'Kristen',
+                                                'katolik' => 'Katolik',
+                                                'hindu' => 'Hindu',
+                                                'budha' => 'Buddha',
                                                 'konghucu' => 'Konghucu',
                                             ]),
 
@@ -122,10 +129,10 @@ class TeacherResource extends Resource
                                         Select::make('employment_status')
                                             ->label('Status Kepegawaian')
                                             ->options([
-                                                'pns'     => 'PNS',
-                                                'p3k'     => 'P3K',
+                                                'pns' => 'PNS',
+                                                'p3k' => 'P3K',
                                                 'honorer' => 'Honorer',
-                                                'gty'     => 'GTY',
+                                                'gty' => 'GTY',
                                             ])
                                             ->default('honorer')
                                             ->required(),
@@ -204,7 +211,7 @@ class TeacherResource extends Resource
                     ->label('')
                     ->circular()
                     ->disk('public')
-                    ->defaultImageUrl(fn($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->full_name) . '&color=0F6E56&background=E1F5EE'),
+                    ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name='.urlencode($record->full_name).'&color=0F6E56&background=E1F5EE'),
 
                 TextColumn::make('full_name')
                     ->label('Nama Lengkap')
@@ -231,19 +238,19 @@ class TeacherResource extends Resource
                 TextColumn::make('employment_status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
-                        'pns'     => 'success',
-                        'p3k'     => 'info',
+                    ->color(fn (string $state): string => match ($state) {
+                        'pns' => 'success',
+                        'p3k' => 'info',
                         'honorer' => 'info',
-                        'gty'     => 'success',
-                        default   => 'gray',
+                        'gty' => 'success',
+                        default => 'gray',
                     })
-                    ->formatStateUsing(fn(string $state): string => match ($state) {
-                        'pns'     => 'PNS',
-                        'p3k'     => 'P3K',
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'pns' => 'PNS',
+                        'p3k' => 'P3K',
                         'honorer' => 'Honorer',
-                        'gty'     => 'GTY',
-                        default   => $state,
+                        'gty' => 'GTY',
+                        default => $state,
                     }),
 
                 IconColumn::make('is_active')
@@ -259,10 +266,10 @@ class TeacherResource extends Resource
                 SelectFilter::make('employment_status')
                     ->label('Status Kepegawaian')
                     ->options([
-                        'pns'     => 'PNS',
-                        'p3k'     => 'P3K',
+                        'pns' => 'PNS',
+                        'p3k' => 'P3K',
                         'honorer' => 'Honorer',
-                        'gty'     => 'GTY',
+                        'gty' => 'GTY',
                     ]),
 
                 TernaryFilter::make('is_active')
@@ -282,7 +289,7 @@ class TeacherResource extends Resource
                         ->exports([
                             ExcelExport::make()
                                 ->withColumns(self::getExportColumns())
-                                ->withFilename('data-guru-' . now()->format('Y-m-d')),
+                                ->withFilename('data-guru-'.now()->format('Y-m-d')),
                         ]),
                 ]),
             ])
@@ -297,7 +304,7 @@ class TeacherResource extends Resource
                     ->exports([
                         ExcelExport::make()
                             ->withColumns(self::getExportColumns())
-                            ->withFilename('data-guru-' . now()->format('Y-m-d')),
+                            ->withFilename('data-guru-'.now()->format('Y-m-d')),
                     ])
                     ->label('Export Data')
                     ->icon('heroicon-o-arrow-up-tray'),
@@ -312,49 +319,50 @@ class TeacherResource extends Resource
             Column::make('nuptk')->heading('NUPTK'),
             Column::make('gender')
                 ->heading('Jenis Kelamin')
-                ->formatStateUsing(fn($state) => match ($state) {
-                    'male'   => 'Laki-laki',
+                ->formatStateUsing(fn ($state) => match ($state) {
+                    'male' => 'Laki-laki',
                     'female' => 'Perempuan',
-                    default  => $state,
+                    default => $state,
                 }),
             Column::make('religion')
                 ->heading('Agama')
-                ->formatStateUsing(fn($state) => ucfirst($state ?? '-')),
+                ->formatStateUsing(fn ($state) => ucfirst($state ?? '-')),
             Column::make('birth_place')->heading('Tempat Lahir'),
             Column::make('birth_date')
                 ->heading('Tanggal Lahir')
-                ->formatStateUsing(fn($state) => $state ? \Carbon\Carbon::parse($state)->format('d/m/Y') : '-'),
+                ->formatStateUsing(fn ($state) => $state ? Carbon::parse($state)->format('d/m/Y') : '-'),
             Column::make('employment_status')
                 ->heading('Status Kepegawaian')
-                ->formatStateUsing(fn($state) => match ($state) {
-                    'pns'     => 'PNS',
-                    'p3k'     => 'P3K',
+                ->formatStateUsing(fn ($state) => match ($state) {
+                    'pns' => 'PNS',
+                    'p3k' => 'P3K',
                     'honorer' => 'Honorer',
-                    'gty'     => 'GTY',
-                    default   => $state,
+                    'gty' => 'GTY',
+                    default => $state,
                 }),
             Column::make('phone')->heading('No. HP'),
             Column::make('email')->heading('Email'),
             Column::make('address')->heading('Alamat'),
             Column::make('join_date')
                 ->heading('Tanggal Mulai Bertugas')
-                ->formatStateUsing(fn($state) => $state ? \Carbon\Carbon::parse($state)->format('d/m/Y') : '-'),
+                ->formatStateUsing(fn ($state) => $state ? Carbon::parse($state)->format('d/m/Y') : '-'),
             Column::make('is_active')
                 ->heading('Status Aktif')
-                ->formatStateUsing(fn($state) => $state ? 'Aktif' : 'Tidak Aktif'),
+                ->formatStateUsing(fn ($state) => $state ? 'Aktif' : 'Tidak Aktif'),
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => ListTeachers::route('/'),
+            'index' => ListTeachers::route('/'),
             'create' => CreateTeacher::route('/create'),
-            'edit'   => EditTeacher::route('/{record}/edit'),
+            'edit' => EditTeacher::route('/{record}/edit'),
         ];
     }
+
     // Tambahkan method ini di TeacherResource
-    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->where('role', 'teacher');
     }

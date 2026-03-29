@@ -11,13 +11,12 @@ use App\Models\Classroom;
 use App\Models\Competency;
 use App\Models\Subject;
 use App\Models\SubjectKkm;
-use App\Models\Teacher;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -33,17 +32,21 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Filament\Forms\Components\Hidden;
 
 class SubjectResource extends Resource
 {
     protected static ?string $model = Subject::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-book-open';
+
     protected static string|\UnitEnum|null $navigationGroup = 'Akademik';
+
     protected static ?string $navigationLabel = 'Mata Pelajaran';
+
     protected static ?int $navigationSort = 3;
+
     protected static ?string $modelLabel = 'Mata Pelajaran';
+
     protected static ?string $pluralModelLabel = 'Mata Pelajaran';
 
     public static function form(Schema $schema): Schema
@@ -80,13 +83,13 @@ class SubjectResource extends Resource
                                             ->label('Kelompok Mata Pelajaran')
                                             ->options([
                                                 '── Kurikulum Merdeka ──' => [
-                                                    'umum'     => 'Umum',
+                                                    'umum' => 'Umum',
                                                     'kejuruan' => 'Kejuruan',
-                                                    'pilihan'  => 'Pilihan',
+                                                    'pilihan' => 'Pilihan',
                                                 ],
                                                 '── Kurikulum K13 ──' => [
-                                                    'normative'  => 'Normatif',
-                                                    'adaptive'   => 'Adaptif',
+                                                    'normative' => 'Normatif',
+                                                    'adaptive' => 'Adaptif',
                                                     'productive' => 'Produktif',
                                                 ],
                                                 '── Umum ──' => [
@@ -103,25 +106,15 @@ class SubjectResource extends Resource
                                                 Competency::where('is_active', true)
                                                     ->with('major')
                                                     ->get()
-                                                    ->filter(fn($c) => $c->major !== null)
-                                                    ->mapWithKeys(fn($c) => [
-                                                        $c->id => $c->major->name . ' — ' . $c->name,
+                                                    ->filter(fn ($c) => $c->major !== null)
+                                                    ->mapWithKeys(fn ($c) => [
+                                                        $c->id => $c->major->name.' — '.$c->name,
                                                     ])
                                             )
                                             ->searchable()
                                             ->placeholder('Kosongkan jika berlaku untuk semua jurusan')
                                             ->helperText('Isi hanya untuk mapel Produktif yang spesifik jurusan.')
-                                            ->visible(fn($get) => in_array($get('subject_type'), ['productive', 'kejuruan'])),
-
-                                        TextInput::make('credit_hours')
-                                            ->label('Jam Pelajaran per Minggu')
-                                            ->placeholder('2')
-                                            ->helperText('Jumlah jam pelajaran per minggu.')
-                                            ->numeric()
-                                            ->default(2)
-                                            ->minValue(1)
-                                            ->maxValue(40)
-                                            ->required(),
+                                            ->visible(fn ($get) => in_array($get('subject_type'), ['productive', 'kejuruan'])),
 
                                         Toggle::make('is_active')
                                             ->label('Aktif')
@@ -131,29 +124,7 @@ class SubjectResource extends Resource
                                     ]),
                             ]),
 
-                        // ── Tab 2: Guru Pengampu ──────────────────────────
-                        Tab::make('Guru Pengampu')
-                            ->icon('heroicon-o-user-group')
-                            ->schema([
-                                Section::make()
-                                    ->description('Daftar guru yang mengampu mata pelajaran ini.')
-                                    ->schema([
-                                        Select::make('teachers')
-                                            ->label('Guru Pengampu')
-                                            ->multiple()
-                                            ->relationship('teachers', 'full_name')
-                                            ->options(
-                                                Teacher::where('is_active', true)
-                                                    ->where('role', 'teacher')
-                                                    ->orderBy('full_name')
-                                                    ->pluck('full_name', 'id')
-                                            )
-                                            ->searchable()
-                                            ->helperText('Pilih satu atau lebih guru yang mengampu mata pelajaran ini.'),
-                                    ]),
-                            ]),
-
-                        // ── Tab 3: KKM ────────────────────────────────────
+                        // ── Tab 2: KKM ────────────────────────────────────
                         Tab::make('KKM')
                             ->icon('heroicon-o-chart-bar')
                             ->schema([
@@ -171,7 +142,7 @@ class SubjectResource extends Resource
                                                 AcademicYear::orderBy('name', 'desc')
                                                     ->pluck('name', 'id')
                                             )
-                                            ->default(fn() => AcademicYear::where('is_active', true)->first()?->id)
+                                            ->default(fn () => AcademicYear::where('is_active', true)->first()?->id)
                                             ->searchable()
                                             ->live()
                                             ->dehydrated(false),
@@ -179,8 +150,7 @@ class SubjectResource extends Resource
                                         Select::make('kkm_semester_id')
                                             ->label('Semester')
                                             ->options(
-                                                fn($get) =>
-                                                AcademicSemester::where(
+                                                fn ($get) => AcademicSemester::where(
                                                     'academic_year_id',
                                                     $get('kkm_academic_year_id')
                                                 )
@@ -194,11 +164,10 @@ class SubjectResource extends Resource
                                         Select::make('kkm_classroom_ids')
                                             ->label('Kelas')
                                             ->options(
-                                                fn($get) =>
-                                                Classroom::where('is_active', true)
+                                                fn ($get) => Classroom::where('is_active', true)
                                                     ->when(
                                                         $get('kkm_academic_year_id'),
-                                                        fn($q, $v) => $q->where('academic_year_id', $v)
+                                                        fn ($q, $v) => $q->where('academic_year_id', $v)
                                                     )
                                                     ->orderBy('name')
                                                     ->pluck('name', 'id')
@@ -225,34 +194,36 @@ class SubjectResource extends Resource
                                                 ->icon('heroicon-o-check-circle')
                                                 ->color('success')
                                                 ->size('lg')
-                                                ->action(function (callable $get, callable $set, $record) { 
-                                                    if (!$record) {
+                                                ->action(function (callable $get, callable $set, $record) {
+                                                    if (! $record) {
                                                         Notification::make()->warning()->title('Simpan mata pelajaran terlebih dahulu')->send();
+
                                                         return;
                                                     }
 
                                                     $classroomIds = $get('kkm_classroom_ids') ?? [];
-                                                    $semesterId   = $get('kkm_semester_id');
-                                                    $yearId       = $get('kkm_academic_year_id');
-                                                    $kkmValue     = $get('kkm_value') ?? 75;
+                                                    $semesterId = $get('kkm_semester_id');
+                                                    $yearId = $get('kkm_academic_year_id');
+                                                    $kkmValue = $get('kkm_value') ?? 75;
 
-                                                    if (empty($classroomIds) || !$semesterId) {
+                                                    if (empty($classroomIds) || ! $semesterId) {
                                                         Notification::make()
                                                             ->warning()
                                                             ->title('Pilih kelas dan semester terlebih dahulu')
                                                             ->send();
+
                                                         return;
                                                     }
 
                                                     $saved = 0;
                                                     foreach ($classroomIds as $classroomId) {
                                                         SubjectKkm::updateOrCreate([
-                                                            'subject_id'           => $record->id,
-                                                            'classroom_id'         => $classroomId,
+                                                            'subject_id' => $record->id,
+                                                            'classroom_id' => $classroomId,
                                                             'academic_semester_id' => $semesterId,
                                                         ], [
                                                             'academic_year_id' => $yearId,
-                                                            'kkm'              => $kkmValue,
+                                                            'kkm' => $kkmValue,
                                                         ]);
                                                         $saved++;
                                                     }
@@ -260,12 +231,12 @@ class SubjectResource extends Resource
                                                     $allKkms = $record->kkms()->with('classroom')->get();
 
                                                     foreach (['10', '11', '12'] as $grade) {
-                                                        $set('kkms_list_' . $grade, $allKkms->filter(fn($k) => $k->classroom?->grade == $grade)->map(fn($k) => [
-                                                            'id'                   => $k->id,
-                                                            'academic_year_id'     => $k->academic_year_id,
+                                                        $set('kkms_list_'.$grade, $allKkms->filter(fn ($k) => $k->classroom?->grade == $grade)->map(fn ($k) => [
+                                                            'id' => $k->id,
+                                                            'academic_year_id' => $k->academic_year_id,
                                                             'academic_semester_id' => $k->academic_semester_id,
-                                                            'classroom_id'         => $k->classroom_id,
-                                                            'kkm'                  => $k->kkm,
+                                                            'classroom_id' => $k->classroom_id,
+                                                            'kkm' => $k->kkm,
                                                         ])->values()->toArray());
                                                     }
 
@@ -315,21 +286,24 @@ class SubjectResource extends Resource
                                                 ->modalHeading('Duplikasi KKM')
                                                 ->modalDescription('KKM dari tahun sumber akan disalin ke tahun tujuan. KKM yang sudah ada tidak akan ditimpa.')
                                                 ->action(function (callable $get, callable $set, $record) { // 🔥 Tambahkan $set di sini
-                                                    if (!$record) {
+                                                    if (! $record) {
                                                         Notification::make()->warning()->title('Simpan mata pelajaran terlebih dahulu')->send();
+
                                                         return;
                                                     }
 
                                                     $sourceYearId = $get('kkm_source_year_id');
                                                     $targetYearId = $get('kkm_target_year_id');
 
-                                                    if (!$sourceYearId || !$targetYearId) {
+                                                    if (! $sourceYearId || ! $targetYearId) {
                                                         Notification::make()->warning()->title('Pilih tahun ajaran sumber dan tujuan')->send();
+
                                                         return;
                                                     }
 
                                                     if ($sourceYearId === $targetYearId) {
                                                         Notification::make()->warning()->title('Tahun ajaran sumber dan tujuan tidak boleh sama')->send();
+
                                                         return;
                                                     }
 
@@ -346,32 +320,34 @@ class SubjectResource extends Resource
 
                                                     foreach ($sourceKkms as $kkm) {
                                                         $targetSemesterId = $targetSemesters[$kkm->academicSemester?->semester] ?? null;
-                                                        if (!$targetSemesterId) {
+                                                        if (! $targetSemesterId) {
                                                             $skipped++;
+
                                                             continue;
                                                         }
 
                                                         $targetClassroom = Classroom::where('academic_year_id', $targetYearId)
                                                             ->where('name', $kkm->classroom?->name)
                                                             ->first();
-                                                        if (!$targetClassroom) {
+                                                        if (! $targetClassroom) {
                                                             $skipped++;
+
                                                             continue;
                                                         }
 
                                                         $exists = SubjectKkm::where([
-                                                            'subject_id'           => $record->id,
-                                                            'classroom_id'         => $targetClassroom->id,
+                                                            'subject_id' => $record->id,
+                                                            'classroom_id' => $targetClassroom->id,
                                                             'academic_semester_id' => $targetSemesterId,
                                                         ])->exists();
 
-                                                        if (!$exists) {
+                                                        if (! $exists) {
                                                             SubjectKkm::create([
-                                                                'subject_id'           => $record->id,
-                                                                'classroom_id'         => $targetClassroom->id,
-                                                                'academic_year_id'     => $targetYearId,
+                                                                'subject_id' => $record->id,
+                                                                'classroom_id' => $targetClassroom->id,
+                                                                'academic_year_id' => $targetYearId,
                                                                 'academic_semester_id' => $targetSemesterId,
-                                                                'kkm'                  => $kkm->kkm,
+                                                                'kkm' => $kkm->kkm,
                                                             ]);
                                                             $copied++;
                                                         } else {
@@ -382,12 +358,12 @@ class SubjectResource extends Resource
                                                     $allKkms = $record->kkms()->with('classroom')->get();
 
                                                     foreach (['10', '11', '12'] as $grade) {
-                                                        $set('kkms_list_' . $grade, $allKkms->filter(fn($k) => $k->classroom?->grade == $grade)->map(fn($k) => [
-                                                            'id'                   => $k->id,
-                                                            'academic_year_id'     => $k->academic_year_id,
+                                                        $set('kkms_list_'.$grade, $allKkms->filter(fn ($k) => $k->classroom?->grade == $grade)->map(fn ($k) => [
+                                                            'id' => $k->id,
+                                                            'academic_year_id' => $k->academic_year_id,
                                                             'academic_semester_id' => $k->academic_semester_id,
-                                                            'classroom_id'         => $k->classroom_id,
-                                                            'kkm'                  => $k->kkm,
+                                                            'classroom_id' => $k->classroom_id,
+                                                            'kkm' => $k->kkm,
                                                         ])->values()->toArray());
                                                     }
 
@@ -408,16 +384,16 @@ class SubjectResource extends Resource
                                     ->collapsed()
                                     ->schema([
                                         Tabs::make('KKM Per Tingkat')
-                                        ->tabs([
-                                            Tab::make('Kelas X (10)')
-                                                ->schema([ self::getKkmRepeater('10') ]),
-                                            
-                                            Tab::make('Kelas XI (11)')
-                                                ->schema([ self::getKkmRepeater('11') ]),
-                                            
-                                            Tab::make('Kelas XII (12)')
-                                                ->schema([ self::getKkmRepeater('12') ]),
-                                        ])
+                                            ->tabs([
+                                                Tab::make('Kelas X (10)')
+                                                    ->schema([self::getKkmRepeater('10')]),
+
+                                                Tab::make('Kelas XI (11)')
+                                                    ->schema([self::getKkmRepeater('11')]),
+
+                                                Tab::make('Kelas XII (12)')
+                                                    ->schema([self::getKkmRepeater('12')]),
+                                            ]),
                                     ]),
                             ]),
 
@@ -445,45 +421,32 @@ class SubjectResource extends Resource
                 TextColumn::make('subject_type')
                     ->label('Kelompok')
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
-                        'umum'       => 'info',
-                        'kejuruan'   => 'success',
-                        'pilihan'    => 'warning',
-                        'normative'  => 'info',
-                        'adaptive'   => 'warning',
+                    ->color(fn (string $state): string => match ($state) {
+                        'umum' => 'info',
+                        'kejuruan' => 'success',
+                        'pilihan' => 'warning',
+                        'normative' => 'info',
+                        'adaptive' => 'warning',
                         'productive' => 'success',
-                        'mulok'      => 'gray',
-                        default      => 'gray',
+                        'mulok' => 'gray',
+                        default => 'gray',
                     })
-                    ->formatStateUsing(fn(string $state): string => match ($state) {
-                        'umum'       => 'Umum',
-                        'kejuruan'   => 'Kejuruan',
-                        'pilihan'    => 'Pilihan',
-                        'normative'  => 'Normatif',
-                        'adaptive'   => 'Adaptif',
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'umum' => 'Umum',
+                        'kejuruan' => 'Kejuruan',
+                        'pilihan' => 'Pilihan',
+                        'normative' => 'Normatif',
+                        'adaptive' => 'Adaptif',
                         'productive' => 'Produktif',
-                        'mulok'      => 'Mulok',
-                        default      => $state,
+                        'mulok' => 'Mulok',
+                        default => $state,
                     }),
-
                 TextColumn::make('competency.name')
                     ->label('Jurusan')
                     ->placeholder('Semua Jurusan')
                     ->badge()
                     ->color('success')
                     ->toggleable(),
-
-                TextColumn::make('credit_hours')
-                    ->label('Jam/Minggu')
-                    ->suffix(' jam')
-                    ->sortable(),
-
-                TextColumn::make('teachers_count')
-                    ->label('Guru')
-                    ->counts('teachers')
-                    ->badge()
-                    ->color('info')
-                    ->suffix(' guru'),
 
                 TextColumn::make('kkms_count')
                     ->label('KKM')
@@ -503,13 +466,13 @@ class SubjectResource extends Resource
                 SelectFilter::make('subject_type')
                     ->label('Kelompok')
                     ->options([
-                        'umum'       => 'Umum (Merdeka)',
-                        'kejuruan'   => 'Kejuruan (Merdeka)',
-                        'pilihan'    => 'Pilihan (Merdeka)',
-                        'normative'  => 'Normatif (K13)',
-                        'adaptive'   => 'Adaptif (K13)',
+                        'umum' => 'Umum (Merdeka)',
+                        'kejuruan' => 'Kejuruan (Merdeka)',
+                        'pilihan' => 'Pilihan (Merdeka)',
+                        'normative' => 'Normatif (K13)',
+                        'adaptive' => 'Adaptif (K13)',
                         'productive' => 'Produktif (K13)',
-                        'mulok'      => 'Muatan Lokal',
+                        'mulok' => 'Muatan Lokal',
                     ]),
 
                 SelectFilter::make('competency_id')
@@ -533,30 +496,31 @@ class SubjectResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => ListSubjects::route('/'),
+            'index' => ListSubjects::route('/'),
             'create' => CreateSubject::route('/create'),
-            'edit'   => EditSubject::route('/{record}/edit'),
+            'edit' => EditSubject::route('/{record}/edit'),
         ];
     }
 
-
-public static function getKkmRepeater(string $grade): Repeater
+    public static function getKkmRepeater(string $grade): Repeater
     {
-        return Repeater::make('kkms_list_' . $grade)
+        return Repeater::make('kkms_list_'.$grade)
             ->label('')
             ->afterStateHydrated(function ($component, $record) use ($grade) {
-                if (!$record) return;
+                if (! $record) {
+                    return;
+                }
 
                 $component->state(
                     $record->kkms()
-                        ->whereHas('classroom', fn($q) => $q->where('grade', $grade))
+                        ->whereHas('classroom', fn ($q) => $q->where('grade', $grade))
                         ->get()
-                        ->map(fn($k) => [
-                            'id'                   => $k->id,
-                            'academic_year_id'     => $k->academic_year_id,
+                        ->map(fn ($k) => [
+                            'id' => $k->id,
+                            'academic_year_id' => $k->academic_year_id,
                             'academic_semester_id' => $k->academic_semester_id,
-                            'classroom_id'         => $k->classroom_id,
-                            'kkm'                  => $k->kkm,
+                            'classroom_id' => $k->classroom_id,
+                            'kkm' => $k->kkm,
                         ])->toArray()
                 );
             })
@@ -594,13 +558,12 @@ public static function getKkmRepeater(string $grade): Repeater
             ->reorderable(false)
             ->addable(false)
             ->itemLabel(
-                fn(array $state): ?string =>
-                isset($state['classroom_id']) && $state['classroom_id']
-                    ? (Classroom::find($state['classroom_id'])?->name ?? 'Kelas #' . $state['classroom_id'])
-                    . ' — KKM: ' . ($state['kkm'] ?? '-')
-                    : 'KKM: ' . ($state['kkm'] ?? '-')
+                fn (array $state): ?string => isset($state['classroom_id']) && $state['classroom_id']
+                    ? (Classroom::find($state['classroom_id'])?->name ?? 'Kelas #'.$state['classroom_id'])
+                    .' — KKM: '.($state['kkm'] ?? '-')
+                    : 'KKM: '.($state['kkm'] ?? '-')
             )
             ->collapsed()
             ->collapsible();
     }
-    }
+}

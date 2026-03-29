@@ -9,6 +9,7 @@ use Filament\Resources\Pages\ListRecords;
 class ListTeachers extends ListRecords
 {
     protected static string $resource = TeacherResource::class;
+
     protected static ?string $title = 'Data Guru';
 
     // Filament v4 — pakai method bukan property

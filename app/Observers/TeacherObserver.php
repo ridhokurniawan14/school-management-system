@@ -18,9 +18,9 @@ class TeacherObserver
     {
         if ($teacher->email && ! $teacher->user_id) {
             $user = User::create([
-                'name'     => $teacher->full_name,
-                'email'    => $teacher->email,
-                'password' => Hash::make('smkpgri1@' . now()->year),
+                'name' => $teacher->full_name,
+                'email' => $teacher->email,
+                'password' => Hash::make('smkpgri1@'.now()->year),
             ]);
 
             $teacher->updateQuietly(['user_id' => $user->id]);
@@ -34,7 +34,7 @@ class TeacherObserver
     {
         if ($teacher->user) {
             $teacher->user->update([
-                'name'  => $teacher->full_name,
+                'name' => $teacher->full_name,
                 'email' => $teacher->email,
             ]);
         }
@@ -73,7 +73,7 @@ class TeacherObserver
         // Hapus semua berkas dokumen
         if ($teacher->documents) {
             foreach ($teacher->documents as $doc) {
-                if (!empty($doc['file'])) {
+                if (! empty($doc['file'])) {
                     Storage::disk('public')->delete($doc['file']);
                 }
             }

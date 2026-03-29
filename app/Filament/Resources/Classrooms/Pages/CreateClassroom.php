@@ -8,15 +8,18 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateClassroom extends CreateRecord
 {
     protected static string $resource = ClassroomResource::class;
+
     protected static ?string $title = 'Tambah Kelas';
 
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
     }
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['grade'] = (string) $data['grade'];
+
         return $data;
     }
 }

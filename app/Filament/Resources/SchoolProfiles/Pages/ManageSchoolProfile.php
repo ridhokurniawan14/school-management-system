@@ -14,18 +14,18 @@ class ManageSchoolProfile extends EditRecord
     protected static ?string $title = 'Profil Sekolah';
 
     // Ambil record pertama, buat otomatis jika belum ada
-    public function mount(int|string $record = null): void
+    public function mount(int|string|null $record = null): void
     {
         $record = SchoolProfile::firstOrCreate([], [
-            'name'                      => 'SMK PGRI 1 Giri Banyuwangi',
-            'short_name'                => 'SMK PGRI 1 Giri',
-            'school_type'               => 'SMK',
-            'school_category'           => 'swasta',
-            'curriculum'                => 'merdeka',
-            'province'                  => 'Jawa Timur',
-            'city'                      => 'Kabupaten Banyuwangi',
-            'district'                  => 'Giri',
-            'timezone'                  => 'Asia/Jakarta',
+            'name' => 'SMK PGRI 1 Giri Banyuwangi',
+            'short_name' => 'SMK PGRI 1 Giri',
+            'school_type' => 'SMK',
+            'school_category' => 'swasta',
+            'curriculum' => 'merdeka',
+            'province' => 'Jawa Timur',
+            'city' => 'Kabupaten Banyuwangi',
+            'district' => 'Giri',
+            'timezone' => 'Asia/Jakarta',
             'academic_year_start_month' => 7,
         ]);
 

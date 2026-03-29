@@ -20,7 +20,6 @@ use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
@@ -31,10 +30,15 @@ class ClassroomResource extends Resource
     protected static ?string $model = Classroom::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
+
     protected static string|\UnitEnum|null $navigationGroup = 'Akademik';
+
     protected static ?string $navigationLabel = 'Kelas & Rombel';
+
     protected static ?int $navigationSort = 4;
+
     protected static ?string $modelLabel = 'Kelas';
+
     protected static ?string $pluralModelLabel = 'Kelas & Rombel';
 
     public static function form(Schema $schema): Schema
@@ -71,7 +75,7 @@ class ClassroomResource extends Resource
                                 AcademicYear::orderBy('name', 'desc')
                                     ->pluck('name', 'id')
                             )
-                            ->default(fn() => AcademicYear::where('is_active', true)->first()?->id)
+                            ->default(fn () => AcademicYear::where('is_active', true)->first()?->id)
                             ->searchable()
                             ->required()
                             ->helperText('Tahun ajaran kelas ini berlaku.'),
@@ -82,9 +86,9 @@ class ClassroomResource extends Resource
                                 Competency::where('is_active', true)
                                     ->with('major')
                                     ->get()
-                                    ->filter(fn($c) => $c->major !== null)
-                                    ->mapWithKeys(fn($c) => [
-                                        $c->id => $c->major->name . ' — ' . $c->name,
+                                    ->filter(fn ($c) => $c->major !== null)
+                                    ->mapWithKeys(fn ($c) => [
+                                        $c->id => $c->major->name.' — '.$c->name,
                                     ])
                             )
                             ->searchable()
@@ -142,7 +146,7 @@ class ClassroomResource extends Resource
                     ->label('Tingkat')
                     ->badge()
                     ->color('info')
-                    ->formatStateUsing(fn($state) => 'Kelas ' . $state),
+                    ->formatStateUsing(fn ($state) => 'Kelas '.$state),
 
                 TextColumn::make('academicYear.name')
                     ->label('Tahun Ajaran')
@@ -224,9 +228,9 @@ class ClassroomResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => ListClassrooms::route('/'),
+            'index' => ListClassrooms::route('/'),
             'create' => CreateClassroom::route('/create'),
-            'edit'   => EditClassroom::route('/{record}/edit'),
+            'edit' => EditClassroom::route('/{record}/edit'),
         ];
     }
 }

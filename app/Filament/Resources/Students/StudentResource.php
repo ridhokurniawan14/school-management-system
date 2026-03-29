@@ -9,8 +9,9 @@ use App\Filament\Resources\Students\Pages\EditStudent;
 use App\Filament\Resources\Students\Pages\ListStudents;
 use App\Models\Competency;
 use App\Models\Student;
-use Filament\Actions\BulkActionGroup;
+use Carbon\Carbon;
 use Filament\Actions\BulkAction;
+use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -19,19 +20,19 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use pxlrbt\FilamentExcel\Columns\Column;
@@ -44,10 +45,15 @@ class StudentResource extends Resource
     protected static ?string $model = Student::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user';
+
     protected static string|\UnitEnum|null $navigationGroup = 'Kesiswaan';
+
     protected static ?string $navigationLabel = 'Daftar Siswa';
+
     protected static ?int $navigationSort = 1;
+
     protected static ?string $modelLabel = 'Siswa';
+
     protected static ?string $pluralModelLabel = 'Data Siswa';
 
     public static function form(Schema $schema): Schema
@@ -90,7 +96,7 @@ class StudentResource extends Resource
                                         Select::make('gender')
                                             ->label('Jenis Kelamin')
                                             ->options([
-                                                'male'   => 'Laki-laki',
+                                                'male' => 'Laki-laki',
                                                 'female' => 'Perempuan',
                                             ])
                                             ->required(),
@@ -98,11 +104,11 @@ class StudentResource extends Resource
                                         Select::make('religion')
                                             ->label('Agama')
                                             ->options([
-                                                'islam'    => 'Islam',
-                                                'kristen'  => 'Kristen',
-                                                'katolik'  => 'Katolik',
-                                                'hindu'    => 'Hindu',
-                                                'budha'    => 'Buddha',
+                                                'islam' => 'Islam',
+                                                'kristen' => 'Kristen',
+                                                'katolik' => 'Katolik',
+                                                'hindu' => 'Hindu',
+                                                'budha' => 'Buddha',
                                                 'konghucu' => 'Konghucu',
                                             ]),
 
@@ -119,10 +125,10 @@ class StudentResource extends Resource
                                         Select::make('blood_type')
                                             ->label('Golongan Darah')
                                             ->options([
-                                                'A'       => 'A',
-                                                'B'       => 'B',
-                                                'AB'      => 'AB',
-                                                'O'       => 'O',
+                                                'A' => 'A',
+                                                'B' => 'B',
+                                                'AB' => 'AB',
+                                                'O' => 'O',
                                                 'unknown' => 'Tidak Diketahui',
                                             ])
                                             ->default('unknown'),
@@ -130,10 +136,10 @@ class StudentResource extends Resource
                                         Select::make('status')
                                             ->label('Status Siswa')
                                             ->options([
-                                                'active'      => 'Aktif',
-                                                'graduated'   => 'Lulus',
+                                                'active' => 'Aktif',
+                                                'graduated' => 'Lulus',
                                                 'transferred' => 'Pindah',
-                                                'dropped'     => 'Keluar',
+                                                'dropped' => 'Keluar',
                                             ])
                                             ->default('active')
                                             ->required(),
@@ -152,9 +158,9 @@ class StudentResource extends Resource
                                                 Competency::where('is_active', true)
                                                     ->with('major')
                                                     ->get()
-                                                    ->filter(fn($c) => $c->major !== null)
-                                                    ->mapWithKeys(fn($c) => [
-                                                        $c->id => $c->major->name . ' — ' . $c->name,
+                                                    ->filter(fn ($c) => $c->major !== null)
+                                                    ->mapWithKeys(fn ($c) => [
+                                                        $c->id => $c->major->name.' — '.$c->name,
                                                     ])
                                             )
                                             ->searchable()
@@ -219,8 +225,8 @@ class StudentResource extends Resource
                                                 Select::make('relationship')
                                                     ->label('Hubungan')
                                                     ->options([
-                                                        'father'   => 'Ayah',
-                                                        'mother'   => 'Ibu',
+                                                        'father' => 'Ayah',
+                                                        'mother' => 'Ibu',
                                                         'guardian' => 'Wali',
                                                     ])
                                                     ->required(),
@@ -372,13 +378,13 @@ class StudentResource extends Resource
                                         Select::make('detail.transportation')
                                             ->label('Alat Transportasi')
                                             ->options([
-                                                'jalan_kaki'   => 'Jalan Kaki',
-                                                'sepeda'       => 'Sepeda',
-                                                'motor'        => 'Sepeda Motor',
-                                                'mobil'        => 'Mobil Pribadi',
-                                                'angkot'       => 'Angkutan Umum',
+                                                'jalan_kaki' => 'Jalan Kaki',
+                                                'sepeda' => 'Sepeda',
+                                                'motor' => 'Sepeda Motor',
+                                                'mobil' => 'Mobil Pribadi',
+                                                'angkot' => 'Angkutan Umum',
                                                 'antar_jemput' => 'Antar Jemput Sekolah',
-                                                'lainnya'      => 'Lainnya',
+                                                'lainnya' => 'Lainnya',
                                             ])
                                             ->placeholder('Pilih alat transportasi'),
 
@@ -410,7 +416,7 @@ class StudentResource extends Resource
                     ->label('')
                     ->circular()
                     ->disk('public')
-                    ->defaultImageUrl(fn($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->full_name) . '&color=185FA5&background=E6F1FB'),
+                    ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name='.urlencode($record->full_name).'&color=185FA5&background=E6F1FB'),
 
                 TextColumn::make('nis')
                     ->label('NIS')
@@ -441,19 +447,19 @@ class StudentResource extends Resource
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
-                        'active'      => 'success',
-                        'graduated'   => 'info',
+                    ->color(fn (string $state): string => match ($state) {
+                        'active' => 'success',
+                        'graduated' => 'info',
                         'transferred' => 'warning',
-                        'dropped'     => 'danger',
-                        default       => 'gray',
+                        'dropped' => 'danger',
+                        default => 'gray',
                     })
-                    ->formatStateUsing(fn(string $state): string => match ($state) {
-                        'active'      => 'Aktif',
-                        'graduated'   => 'Lulus',
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'active' => 'Aktif',
+                        'graduated' => 'Lulus',
                         'transferred' => 'Pindah',
-                        'dropped'     => 'Keluar',
-                        default       => $state,
+                        'dropped' => 'Keluar',
+                        default => $state,
                     }),
             ])
             ->defaultSort('nis', 'desc')
@@ -461,12 +467,12 @@ class StudentResource extends Resource
                 SelectFilter::make('competency_id')
                     ->label('Jurusan')
                     ->options(
-                        \App\Models\Competency::where('is_active', true)
+                        Competency::where('is_active', true)
                             ->with('major')
                             ->get()
-                            ->filter(fn($c) => $c->major !== null)
-                            ->mapWithKeys(fn($c) => [
-                                $c->id => $c->major->name . ' — ' . $c->name,
+                            ->filter(fn ($c) => $c->major !== null)
+                            ->mapWithKeys(fn ($c) => [
+                                $c->id => $c->major->name.' — '.$c->name,
                             ])
                     )
                     ->searchable(),
@@ -474,10 +480,10 @@ class StudentResource extends Resource
                 SelectFilter::make('status')
                     ->label('Status Siswa')
                     ->options([
-                        'active'      => 'Aktif',
-                        'graduated'   => 'Lulus',
+                        'active' => 'Aktif',
+                        'graduated' => 'Lulus',
                         'transferred' => 'Pindah',
-                        'dropped'     => 'Keluar',
+                        'dropped' => 'Keluar',
                     ]),
 
                 SelectFilter::make('entry_year')
@@ -498,7 +504,7 @@ class StudentResource extends Resource
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
 
-                    \Filament\Actions\BulkAction::make('ganti_status')
+                    BulkAction::make('ganti_status')
                         ->label('Ganti Status')
                         ->icon('heroicon-o-arrow-path')
                         ->color('info')
@@ -510,23 +516,23 @@ class StudentResource extends Resource
                             Select::make('status')
                                 ->label('Status Siswa')
                                 ->options([
-                                    'active'      => 'Aktif',
-                                    'graduated'   => 'Lulus',
+                                    'active' => 'Aktif',
+                                    'graduated' => 'Lulus',
                                     'transferred' => 'Pindah',
-                                    'dropped'     => 'Keluar',
+                                    'dropped' => 'Keluar',
                                 ])
                                 ->required()
                                 ->helperText('Status baru akan diterapkan ke semua siswa yang dicentang.'),
                         ])
-                        ->action(function (\Illuminate\Database\Eloquent\Collection $records, array $data): void {
-                            $records->each(fn($student) => $student->update([
+                        ->action(function (Collection $records, array $data): void {
+                            $records->each(fn ($student) => $student->update([
                                 'status' => $data['status'],
                             ]));
                         })
                         ->deselectRecordsAfterCompletion()
                         ->successNotificationTitle('Status siswa berhasil diperbarui!'),
 
-                    \Filament\Actions\BulkAction::make('ganti_jurusan')
+                    BulkAction::make('ganti_jurusan')
                         ->label('Ganti Jurusan')
                         ->icon('heroicon-o-academic-cap')
                         ->color('warning')
@@ -538,20 +544,20 @@ class StudentResource extends Resource
                             Select::make('competency_id')
                                 ->label('Kompetensi Keahlian / Jurusan')
                                 ->options(
-                                    \App\Models\Competency::where('is_active', true)
+                                    Competency::where('is_active', true)
                                         ->with('major')
                                         ->get()
-                                        ->filter(fn($c) => $c->major !== null)
-                                        ->mapWithKeys(fn($c) => [
-                                            $c->id => $c->major->name . ' — ' . $c->name,
+                                        ->filter(fn ($c) => $c->major !== null)
+                                        ->mapWithKeys(fn ($c) => [
+                                            $c->id => $c->major->name.' — '.$c->name,
                                         ])
                                 )
                                 ->searchable()
                                 ->required()
                                 ->helperText('Jurusan baru akan diterapkan ke semua siswa yang dicentang.'),
                         ])
-                        ->action(function (\Illuminate\Database\Eloquent\Collection $records, array $data): void {
-                            $records->each(fn($student) => $student->update([
+                        ->action(function (Collection $records, array $data): void {
+                            $records->each(fn ($student) => $student->update([
                                 'competency_id' => $data['competency_id'],
                             ]));
                         })
@@ -562,7 +568,7 @@ class StudentResource extends Resource
                         ->exports([
                             ExcelExport::make()
                                 ->withColumns(self::getExportColumns())
-                                ->withFilename('data-siswa-' . now()->format('Y-m-d')),
+                                ->withFilename('data-siswa-'.now()->format('Y-m-d')),
                         ]),
                 ]),
             ])
@@ -577,7 +583,7 @@ class StudentResource extends Resource
                     ->exports([
                         ExcelExport::make()
                             ->withColumns(self::getExportColumns())
-                            ->withFilename('data-siswa-' . now()->format('Y-m-d')),
+                            ->withFilename('data-siswa-'.now()->format('Y-m-d')),
                     ])
                     ->label('Export Data')
                     ->icon('heroicon-o-arrow-up-tray'),
@@ -592,30 +598,30 @@ class StudentResource extends Resource
             Column::make('full_name')->heading('Nama Lengkap'),
             Column::make('gender')
                 ->heading('Jenis Kelamin')
-                ->formatStateUsing(fn($state) => match ($state) {
-                    'male'   => 'Laki-laki',
+                ->formatStateUsing(fn ($state) => match ($state) {
+                    'male' => 'Laki-laki',
                     'female' => 'Perempuan',
-                    default  => $state,
+                    default => $state,
                 }),
             Column::make('religion')
                 ->heading('Agama')
-                ->formatStateUsing(fn($state) => ucfirst($state ?? '-')),
+                ->formatStateUsing(fn ($state) => ucfirst($state ?? '-')),
             Column::make('birth_place')->heading('Tempat Lahir'),
             Column::make('birth_date')
                 ->heading('Tanggal Lahir')
-                ->formatStateUsing(fn($state) => $state
-                    ? \Carbon\Carbon::parse($state)->format('d/m/Y') : '-'),
+                ->formatStateUsing(fn ($state) => $state
+                    ? Carbon::parse($state)->format('d/m/Y') : '-'),
             Column::make('blood_type')->heading('Gol. Darah'),
             Column::make('competency.name')->heading('Jurusan'),
             Column::make('entry_year')->heading('Tahun Masuk'),
             Column::make('status')
                 ->heading('Status')
-                ->formatStateUsing(fn($state) => match ($state) {
-                    'active'      => 'Aktif',
-                    'graduated'   => 'Lulus',
+                ->formatStateUsing(fn ($state) => match ($state) {
+                    'active' => 'Aktif',
+                    'graduated' => 'Lulus',
                     'transferred' => 'Pindah',
-                    'dropped'     => 'Keluar',
-                    default       => $state,
+                    'dropped' => 'Keluar',
+                    default => $state,
                 }),
             Column::make('phone')->heading('No. HP'),
             Column::make('email')->heading('Email'),
@@ -629,9 +635,9 @@ class StudentResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => ListStudents::route('/'),
+            'index' => ListStudents::route('/'),
             'create' => CreateStudent::route('/create'),
-            'edit'   => EditStudent::route('/{record}/edit'),
+            'edit' => EditStudent::route('/{record}/edit'),
         ];
     }
 }

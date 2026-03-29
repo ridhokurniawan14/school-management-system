@@ -45,6 +45,7 @@ class AcademicYearObserver
     {
         //
     }
+
     public function saving(AcademicYear $academicYear): void
     {
         if ($academicYear->is_active) {
@@ -52,7 +53,7 @@ class AcademicYearObserver
                 ->where('is_active', true)
                 ->update([
                     'is_active' => false,
-                    'status'    => 'completed',
+                    'status' => 'completed',
                 ]);
         }
     }

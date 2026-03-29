@@ -19,9 +19,13 @@ class SchoolProfileResource extends Resource
     protected static ?string $model = SchoolProfile::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-building-office-2';
+
     protected static string|\UnitEnum|null $navigationGroup = 'Data Sekolah';
+
     protected static ?string $navigationLabel = 'Profil Sekolah';
+
     protected static ?int $navigationSort = 1;
+
     protected static ?string $modelLabel = 'Profil Sekolah';
 
     public static function form(Schema $schema): Schema
@@ -57,7 +61,7 @@ class SchoolProfileResource extends Resource
                                             ->label('Jenis Sekolah')
                                             ->options([
                                                 'SMA' => 'SMA',
-                                                'MA'  => 'MA',
+                                                'MA' => 'MA',
                                                 'SMK' => 'SMK',
                                             ])
                                             ->default('SMK')
@@ -78,9 +82,9 @@ class SchoolProfileResource extends Resource
                                         Select::make('accreditation')
                                             ->label('Akreditasi')
                                             ->options([
-                                                'A'              => 'A — Unggul',
-                                                'B'              => 'B — Baik',
-                                                'C'              => 'C — Cukup',
+                                                'A' => 'A — Unggul',
+                                                'B' => 'B — Baik',
+                                                'C' => 'C — Cukup',
                                                 'not_accredited' => 'Belum Terakreditasi',
                                             ])
                                             ->placeholder('Pilih status akreditasi'),
@@ -106,7 +110,7 @@ class SchoolProfileResource extends Resource
                                             ->label('Kurikulum')
                                             ->options([
                                                 'merdeka' => 'Kurikulum Merdeka',
-                                                'k13'     => 'Kurikulum 2013 (K13)',
+                                                'k13' => 'Kurikulum 2013 (K13)',
                                             ])
                                             ->default('merdeka')
                                             ->required(),
@@ -217,15 +221,15 @@ class SchoolProfileResource extends Resource
                                         Select::make('academic_year_start_month')
                                             ->label('Bulan Mulai Tahun Ajaran')
                                             ->options([
-                                                1  => 'Januari',
-                                                2  => 'Februari',
-                                                3  => 'Maret',
-                                                4  => 'April',
-                                                5  => 'Mei',
-                                                6  => 'Juni',
-                                                7  => 'Juli',
-                                                8  => 'Agustus',
-                                                9  => 'September',
+                                                1 => 'Januari',
+                                                2 => 'Februari',
+                                                3 => 'Maret',
+                                                4 => 'April',
+                                                5 => 'Mei',
+                                                6 => 'Juni',
+                                                7 => 'Juli',
+                                                8 => 'Agustus',
+                                                9 => 'September',
                                                 10 => 'Oktober',
                                                 11 => 'November',
                                                 12 => 'Desember',
@@ -237,7 +241,7 @@ class SchoolProfileResource extends Resource
                                         Select::make('timezone')
                                             ->label('Zona Waktu')
                                             ->options([
-                                                'Asia/Jakarta'  => 'WIB — Asia/Jakarta',
+                                                'Asia/Jakarta' => 'WIB — Asia/Jakarta',
                                                 'Asia/Makassar' => 'WITA — Asia/Makassar',
                                                 'Asia/Jayapura' => 'WIT — Asia/Jayapura',
                                             ])

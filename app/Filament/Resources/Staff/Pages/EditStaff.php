@@ -10,6 +10,7 @@ use Filament\Resources\Pages\EditRecord;
 class EditStaff extends EditRecord
 {
     protected static string $resource = StaffResource::class;
+
     protected static ?string $title = 'Edit Data Staff';
 
     protected function getHeaderActions(): array

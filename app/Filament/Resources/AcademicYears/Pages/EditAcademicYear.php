@@ -35,9 +35,10 @@ class EditAcademicYear extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        if (!empty($data['is_active'])) {
+        if (! empty($data['is_active'])) {
             $data['status'] = 'active';
         }
+
         return $data;
     }
 }

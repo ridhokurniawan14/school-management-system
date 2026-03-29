@@ -10,8 +10,8 @@ class StudentDetail extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'weight'             => 'decimal:2',
-        'height'             => 'decimal:2',
+        'weight' => 'decimal:2',
+        'height' => 'decimal:2',
         'head_circumference' => 'decimal:2',
         'distance_to_school' => 'decimal:2',
     ];

@@ -13,8 +13,8 @@ return new class extends Migration
         Schema::create('payment_bills', function (Blueprint $table) {
             $table->id();
             $table->foreignId('academic_year_id')
-                  ->constrained('academic_years')
-                  ->cascadeOnDelete();
+                ->constrained('academic_years')
+                ->cascadeOnDelete();
             $table->string('name');                          // "SPP Agustus 2024", "Seragam", "Buku Paket"
             $table->enum('payment_type', ['spp', 'registration', 'uniform', 'book', 'exam', 'other']);
             $table->unsignedBigInteger('amount');            // nominal tagihan (dalam rupiah)
@@ -28,14 +28,14 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->foreignId('student_id')
-                  ->constrained('students')
-                  ->cascadeOnDelete();
+                ->constrained('students')
+                ->cascadeOnDelete();
             $table->foreignId('payment_bill_id')
-                  ->constrained('payment_bills')
-                  ->cascadeOnDelete();
+                ->constrained('payment_bills')
+                ->cascadeOnDelete();
             $table->foreignId('academic_year_id')
-                  ->constrained('academic_years')
-                  ->cascadeOnDelete();
+                ->constrained('academic_years')
+                ->cascadeOnDelete();
             $table->string('receipt_number')->nullable()->unique(); // nomor kuitansi
             $table->unsignedBigInteger('amount');            // nominal yang harus dibayar (bisa beda jika ada diskon)
             $table->unsignedBigInteger('paid_amount')->default(0); // nominal yang sudah dibayar

@@ -30,19 +30,20 @@ use pxlrbt\FilamentExcel\Exports\ExcelExport;
 class StudentsRelationManager extends RelationManager
 {
     protected static string $relationship = 'classroomStudents';
+
     protected static ?string $title = 'Daftar Siswa';
 
     public function table(Table $table): Table
     {
-        $classroom  = $this->getOwnerRecord();
+        $classroom = $this->getOwnerRecord();
 
         return $table
             ->recordTitleAttribute('student.full_name')
             ->heading(
-                fn() => 'Daftar Siswa — ' .
-                    ClassroomStudent::where('classroom_id', $this->getOwnerRecord()->id)->count() .
-                    ' / ' .
-                    ($this->getOwnerRecord()->capacity ?? 36) .
+                fn () => 'Daftar Siswa — '.
+                    ClassroomStudent::where('classroom_id', $this->getOwnerRecord()->id)->count().
+                    ' / '.
+                    ($this->getOwnerRecord()->capacity ?? 36).
                     ' siswa'
             )
             ->columns([
@@ -65,10 +66,10 @@ class StudentsRelationManager extends RelationManager
 
                 TextColumn::make('student.gender')
                     ->label('L/P')
-                    ->formatStateUsing(fn($state) => match ($state) {
-                        'male'   => 'L',
+                    ->formatStateUsing(fn ($state) => match ($state) {
+                        'male' => 'L',
                         'female' => 'P',
-                        default  => '-',
+                        default => '-',
                     })
                     ->toggleable(),
 
@@ -80,17 +81,17 @@ class StudentsRelationManager extends RelationManager
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn($state) => match ($state) {
-                        'active'  => 'success',
-                        'moved'   => 'warning',
+                    ->color(fn ($state) => match ($state) {
+                        'active' => 'success',
+                        'moved' => 'warning',
                         'dropped' => 'danger',
-                        default   => 'gray',
+                        default => 'gray',
                     })
-                    ->formatStateUsing(fn($state) => match ($state) {
-                        'active'  => 'Aktif',
-                        'moved'   => 'Pindah',
+                    ->formatStateUsing(fn ($state) => match ($state) {
+                        'active' => 'Aktif',
+                        'moved' => 'Pindah',
                         'dropped' => 'Keluar',
-                        default   => $state,
+                        default => $state,
                     }),
             ])
             ->headerActions([
@@ -134,23 +135,24 @@ class StudentsRelationManager extends RelationManager
                         $disk = Storage::disk('local');
                         $path = $disk->path($data['file']);
 
-                        if (!file_exists($path)) {
+                        if (! file_exists($path)) {
                             Notification::make()
                                 ->danger()
                                 ->title('File tidak ditemukan')
-                                ->body('Path: ' . $path)
+                                ->body('Path: '.$path)
                                 ->send();
+
                             return;
                         }
 
                         // Baca file — support CSV dan Excel
                         if (str_ends_with($data['file'], '.csv')) {
-                            $rows    = array_map('str_getcsv', file($path));
+                            $rows = array_map('str_getcsv', file($path));
                             array_shift($rows);
                             $nisList = array_column($rows, 0);
                         } else {
                             $spreadsheet = IOFactory::load($path);
-                            $sheet       = $spreadsheet->getActiveSheet()->toArray();
+                            $sheet = $spreadsheet->getActiveSheet()->toArray();
                             array_shift($sheet);
                             $nisList = array_column($sheet, 0);
                         }
@@ -167,27 +169,29 @@ class StudentsRelationManager extends RelationManager
                         foreach ($nisList as $nis) {
                             $student = Student::where('nis', $nis)->first();
 
-                            if (!$student) {
+                            if (! $student) {
                                 $notFound++;
+
                                 continue;
                             }
                             if (in_array($student->id, $existingIds)) {
                                 $skipped++;
+
                                 continue;
                             }
 
                             ClassroomStudent::create([
-                                'student_id'       => $student->id,
-                                'classroom_id'     => $classroom->id,
+                                'student_id' => $student->id,
+                                'classroom_id' => $classroom->id,
                                 'academic_year_id' => $classroom->academic_year_id,
-                                'status'           => 'active',
+                                'status' => 'active',
                             ]);
 
                             if (empty($student->entry_year)) {
-                                $startYear   = $classroom->academicYear?->start_date
+                                $startYear = $classroom->academicYear?->start_date
                                     ? Carbon::parse($classroom->academicYear->start_date)->year
                                     : now()->year;
-                                $gradeOffset = (int)$classroom->grade - 10;
+                                $gradeOffset = (int) $classroom->grade - 10;
                                 $student->update(['entry_year' => $startYear - $gradeOffset]);
                             }
 
@@ -222,8 +226,8 @@ class StudentsRelationManager extends RelationManager
                                     ->whereNotIn('id', $existingIds)
                                     ->orderBy('full_name')
                                     ->get()
-                                    ->mapWithKeys(fn($s) => [
-                                        $s->id => $s->nis . ' — ' . $s->full_name,
+                                    ->mapWithKeys(fn ($s) => [
+                                        $s->id => $s->nis.' — '.$s->full_name,
                                     ]);
                             })
                             ->multiple()
@@ -234,19 +238,19 @@ class StudentsRelationManager extends RelationManager
                     ->action(function (array $data) use ($classroom): void {
                         foreach ($data['student_ids'] as $studentId) {
                             ClassroomStudent::updateOrCreate([
-                                'student_id'       => $studentId,
+                                'student_id' => $studentId,
                                 'academic_year_id' => $classroom->academic_year_id,
                             ], [
                                 'classroom_id' => $classroom->id,
-                                'status'       => 'active',
+                                'status' => 'active',
                             ]);
 
                             $student = Student::find($studentId);
                             if ($student && empty($student->entry_year)) {
-                                $startYear   = $classroom->academicYear?->start_date
+                                $startYear = $classroom->academicYear?->start_date
                                     ? Carbon::parse($classroom->academicYear->start_date)->year
                                     : now()->year;
-                                $gradeOffset = (int)$classroom->grade - 10;
+                                $gradeOffset = (int) $classroom->grade - 10;
                                 $student->update(['entry_year' => $startYear - $gradeOffset]);
                             }
                         }
@@ -262,7 +266,7 @@ class StudentsRelationManager extends RelationManager
                     ->exports([
                         ExcelExport::make()
                             ->withColumns(self::exportColumns())
-                            ->withFilename('siswa-' . $classroom->name . '-' . now()->format('Y-m-d')),
+                            ->withFilename('siswa-'.$classroom->name.'-'.now()->format('Y-m-d')),
                     ]),
             ])
             ->actions([
@@ -285,7 +289,7 @@ class StudentsRelationManager extends RelationManager
                     // ── Bulk Naik Kelas ───────────────────────────────────
                     BulkAction::make('naik_kelas')
                         ->label('Naik Kelas')
-                        ->visible(fn() => $this->getOwnerRecord()->grade != '12')
+                        ->visible(fn () => $this->getOwnerRecord()->grade != '12')
                         ->icon('heroicon-o-arrow-up-circle')
                         ->color('success')
                         ->requiresConfirmation()
@@ -303,39 +307,41 @@ class StudentsRelationManager extends RelationManager
                                 ->helperText('Tahun ajaran baru tempat siswa akan dipindahkan.'),
                         ])
                         ->action(function (Collection $records, array $data) use ($classroom): void {
-                            $nextGrade    = (int)$classroom->grade + 1;
+                            $nextGrade = (int) $classroom->grade + 1;
                             $isGraduating = $classroom->grade == '12';
 
                             foreach ($records as $cs) {
                                 $student = $cs->student;
-                                if (!$student) continue;
+                                if (! $student) {
+                                    continue;
+                                }
 
                                 if ($isGraduating) {
                                     $student->update(['status' => 'graduated']);
                                 } else {
                                     $targetClassroom = Classroom::where('academic_year_id', $data['target_academic_year_id'])
-                                        ->where('grade', (string)$nextGrade)
+                                        ->where('grade', (string) $nextGrade)
                                         ->where('competency_id', $classroom->competency_id)
                                         ->first();
 
-                                    if (!$targetClassroom) {
+                                    if (! $targetClassroom) {
                                         $targetClassroom = Classroom::create([
-                                            'name'                => $classroom->name,
-                                            'academic_year_id'    => $data['target_academic_year_id'],
-                                            'grade'               => (string)$nextGrade,
-                                            'competency_id'       => $classroom->competency_id,
-                                            'capacity'            => $classroom->capacity,
+                                            'name' => $classroom->name,
+                                            'academic_year_id' => $data['target_academic_year_id'],
+                                            'grade' => (string) $nextGrade,
+                                            'competency_id' => $classroom->competency_id,
+                                            'capacity' => $classroom->capacity,
                                             'homeroom_teacher_id' => $classroom->homeroom_teacher_id,
-                                            'is_active'           => true,
+                                            'is_active' => true,
                                         ]);
                                     }
 
                                     ClassroomStudent::updateOrCreate([
-                                        'student_id'       => $student->id,
+                                        'student_id' => $student->id,
                                         'academic_year_id' => $data['target_academic_year_id'],
                                     ], [
                                         'classroom_id' => $targetClassroom->id,
-                                        'status'       => 'active',
+                                        'status' => 'active',
                                     ]);
                                 }
                             }
@@ -355,7 +361,7 @@ class StudentsRelationManager extends RelationManager
                         ->modalHeading('Luluskan Siswa Terpilih')
                         ->modalDescription('Siswa yang dicentang akan diset status LULUS dan menjadi Alumni. Tindakan ini tidak dapat dibatalkan.')
                         ->modalSubmitActionLabel('Ya, Luluskan')
-                        ->visible(fn() => $this->getOwnerRecord()->grade == '12') // ← hanya muncul di kelas XII
+                        ->visible(fn () => $this->getOwnerRecord()->grade == '12') // ← hanya muncul di kelas XII
                         ->form([
                             Select::make('graduation_year')
                                 ->label('Tahun Lulus')
@@ -364,6 +370,7 @@ class StudentsRelationManager extends RelationManager
                                     for ($y = now()->year; $y >= now()->year - 2; $y--) {
                                         $years[$y] = $y;
                                     }
+
                                     return $years;
                                 })
                                 ->default(now()->year)
@@ -373,11 +380,13 @@ class StudentsRelationManager extends RelationManager
                         ->action(function (Collection $records, array $data): void {
                             foreach ($records as $cs) {
                                 $student = $cs->student;
-                                if (!$student) continue;
+                                if (! $student) {
+                                    continue;
+                                }
 
                                 // Set status lulus
                                 $student->update([
-                                    'status'     => 'graduated',
+                                    'status' => 'graduated',
                                     'entry_year' => $student->entry_year, // tetap
                                 ]);
 
@@ -387,7 +396,7 @@ class StudentsRelationManager extends RelationManager
 
                             Notification::make()
                                 ->success()
-                                ->title(count($records) . ' siswa berhasil diluluskan!')
+                                ->title(count($records).' siswa berhasil diluluskan!')
                                 ->body('Status siswa telah diubah menjadi Lulus / Alumni.')
                                 ->send();
                         })
@@ -398,7 +407,7 @@ class StudentsRelationManager extends RelationManager
                         ->exports([
                             ExcelExport::make()
                                 ->withColumns(self::exportColumns())
-                                ->withFilename('siswa-terpilih-' . now()->format('Y-m-d')),
+                                ->withFilename('siswa-terpilih-'.now()->format('Y-m-d')),
                         ]),
                 ]),
             ]);
@@ -413,30 +422,30 @@ class StudentsRelationManager extends RelationManager
             Column::make('student.full_name')->heading('Nama Lengkap'),
             Column::make('student.gender')
                 ->heading('Jenis Kelamin')
-                ->formatStateUsing(fn($state) => match ($state) {
-                    'male'   => 'Laki-laki',
+                ->formatStateUsing(fn ($state) => match ($state) {
+                    'male' => 'Laki-laki',
                     'female' => 'Perempuan',
-                    default  => '-',
+                    default => '-',
                 }),
             Column::make('student.religion')
                 ->heading('Agama')
-                ->formatStateUsing(fn($state) => ucfirst($state ?? '-')),
+                ->formatStateUsing(fn ($state) => ucfirst($state ?? '-')),
             Column::make('student.birth_place')->heading('Tempat Lahir'),
             Column::make('student.birth_date')
                 ->heading('Tanggal Lahir')
-                ->formatStateUsing(fn($state) => $state
+                ->formatStateUsing(fn ($state) => $state
                     ? Carbon::parse($state)->format('d/m/Y') : '-'),
             Column::make('student.blood_type')->heading('Gol. Darah'),
             Column::make('student.competency.name')->heading('Jurusan'),
             Column::make('student.entry_year')->heading('Tahun Masuk'),
             Column::make('student.status')
                 ->heading('Status Siswa')
-                ->formatStateUsing(fn($state) => match ($state) {
-                    'active'      => 'Aktif',
-                    'graduated'   => 'Lulus',
+                ->formatStateUsing(fn ($state) => match ($state) {
+                    'active' => 'Aktif',
+                    'graduated' => 'Lulus',
                     'transferred' => 'Pindah',
-                    'dropped'     => 'Keluar',
-                    default       => $state,
+                    'dropped' => 'Keluar',
+                    default => $state,
                 }),
             Column::make('student.phone')->heading('No. HP'),
             Column::make('student.email')->heading('Email'),
@@ -446,11 +455,11 @@ class StudentsRelationManager extends RelationManager
             Column::make('student.district')->heading('Kecamatan'),
             Column::make('status')
                 ->heading('Status di Kelas')
-                ->formatStateUsing(fn($state) => match ($state) {
-                    'active'  => 'Aktif',
-                    'moved'   => 'Pindah',
+                ->formatStateUsing(fn ($state) => match ($state) {
+                    'active' => 'Aktif',
+                    'moved' => 'Pindah',
                     'dropped' => 'Keluar',
-                    default   => $state,
+                    default => $state,
                 }),
         ];
     }

@@ -17,9 +17,9 @@ class Student extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'birth_date'  => 'date',
-        'is_active'   => 'boolean',
-        'documents'   => 'array',
+        'birth_date' => 'date',
+        'is_active' => 'boolean',
+        'documents' => 'array',
     ];
 
     public function competency(): BelongsTo
@@ -46,6 +46,7 @@ class Student extends Model
     {
         return $this->hasMany(Internship::class);
     }
+
     public function detail(): HasOne
     {
         return $this->hasOne(StudentDetail::class);

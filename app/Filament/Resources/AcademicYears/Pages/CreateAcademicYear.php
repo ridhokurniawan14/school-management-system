@@ -18,9 +18,10 @@ class CreateAcademicYear extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        if (!empty($data['is_active'])) {
+        if (! empty($data['is_active'])) {
             $data['status'] = 'active';
         }
+
         return $data;
     }
 }

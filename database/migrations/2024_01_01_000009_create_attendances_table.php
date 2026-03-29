@@ -11,26 +11,26 @@ return new class extends Migration
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
             $table->foreignId('academic_semester_id')
-                  ->constrained('academic_semesters')
-                  ->cascadeOnDelete();
+                ->constrained('academic_semesters')
+                ->cascadeOnDelete();
             $table->foreignId('classroom_id')
-                  ->constrained('classrooms')
-                  ->cascadeOnDelete();
+                ->constrained('classrooms')
+                ->cascadeOnDelete();
             $table->foreignId('student_id')
-                  ->constrained('students')
-                  ->cascadeOnDelete();
+                ->constrained('students')
+                ->cascadeOnDelete();
             $table->foreignId('schedule_id')
-                  ->nullable()
-                  ->constrained('schedules')
-                  ->nullOnDelete();
-                  // NULL = absensi harian (pagi/pulang)
-                  // Filled = absensi per mata pelajaran
+                ->nullable()
+                ->constrained('schedules')
+                ->nullOnDelete();
+            // NULL = absensi harian (pagi/pulang)
+            // Filled = absensi per mata pelajaran
             $table->date('date');
             $table->enum('status', ['present', 'sick', 'permitted', 'absent']);
-                  // present  = Hadir
-                  // sick     = Sakit (dengan surat)
-                  // permitted = Izin
-                  // absent   = Alpa (tanpa keterangan)
+            // present  = Hadir
+            // sick     = Sakit (dengan surat)
+            // permitted = Izin
+            // absent   = Alpa (tanpa keterangan)
             $table->time('check_in_time')->nullable();       // untuk fingerprint / QR scan
             $table->text('notes')->nullable();               // keterangan tambahan
             $table->unsignedBigInteger('recorded_by')->nullable(); // FK users (guru / TU)

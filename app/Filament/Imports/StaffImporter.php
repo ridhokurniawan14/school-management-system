@@ -101,10 +101,10 @@ class StaffImporter extends Importer
 
     public static function getCompletedNotificationBody(Import $import): string
     {
-        $body = 'Import data staff selesai. ' . number_format($import->successful_rows) . ' data berhasil diimport.';
+        $body = 'Import data staff selesai. '.number_format($import->successful_rows).' data berhasil diimport.';
 
         if ($failedRowsCount = $import->getFailedRowsCount()) {
-            $body .= ' ' . number_format($failedRowsCount) . ' data gagal diimport.';
+            $body .= ' '.number_format($failedRowsCount).' data gagal diimport.';
         }
 
         return $body;

@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Color;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 Route::get('/', function () {
     return view('welcome');
@@ -9,7 +12,7 @@ Route::get('/', function () {
 
 Route::get('/download/template-siswa-kelas', function () {
     $headers = [
-        'Content-Type'        => 'text/csv',
+        'Content-Type' => 'text/csv',
         'Content-Disposition' => 'attachment; filename="template-import-siswa-kelas.csv"',
     ];
 
@@ -19,7 +22,7 @@ Route::get('/download/template-siswa-kelas', function () {
 })->middleware(['auth'])->name('download.template.siswa.kelas');
 
 Route::get('/download/template-siswa-kelas-excel', function () {
-    $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+    $spreadsheet = new Spreadsheet;
     $sheet = $spreadsheet->getActiveSheet();
 
     // Header
@@ -41,15 +44,15 @@ Route::get('/download/template-siswa-kelas-excel', function () {
     $sheet->setCellValue('B4', 'Pastikan tidak ada spasi di awal/akhir NIS');
     $sheet->getColumnDimension('B')->setWidth(55);
     $sheet->getStyle('B2:B4')->getFont()->setColor(
-        new \PhpOffice\PhpSpreadsheet\Style\Color('FF888888')
+        new Color('FF888888')
     );
 
-    $writer   = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+    $writer = new Xlsx($spreadsheet);
     $filename = 'template-import-siswa-kelas.xlsx';
-    $path     = storage_path('app/tmp/' . $filename);
+    $path = storage_path('app/tmp/'.$filename);
 
     // Pastikan folder tmp ada
-    if (!file_exists(storage_path('app/tmp'))) {
+    if (! file_exists(storage_path('app/tmp'))) {
         mkdir(storage_path('app/tmp'), 0755, true);
     }
 

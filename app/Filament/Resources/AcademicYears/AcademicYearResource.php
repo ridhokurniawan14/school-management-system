@@ -29,10 +29,15 @@ class AcademicYearResource extends Resource
     protected static ?string $model = AcademicYear::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-calendar-days';
+
     protected static string|\UnitEnum|null $navigationGroup = 'Data Sekolah';
+
     protected static ?string $navigationLabel = 'Tahun Ajaran';
+
     protected static ?int $navigationSort = 3;
+
     protected static ?string $modelLabel = 'Tahun Ajaran';
+
     protected static ?string $pluralModelLabel = 'Tahun Ajaran';
 
     public static function form(Schema $schema): Schema
@@ -71,8 +76,8 @@ class AcademicYearResource extends Resource
                         Select::make('status')
                             ->label('Status')
                             ->options([
-                                'upcoming'  => 'Akan Datang',
-                                'active'    => 'Aktif / Berjalan',
+                                'upcoming' => 'Akan Datang',
+                                'active' => 'Aktif / Berjalan',
                                 'completed' => 'Selesai',
                             ])
                             ->default('upcoming')
@@ -86,8 +91,7 @@ class AcademicYearResource extends Resource
                             ->offColor('gray')
                             ->live()
                             ->afterStateUpdated(
-                                fn($state, callable $set) =>
-                                $state ? $set('status', 'active') : null
+                                fn ($state, callable $set) => $state ? $set('status', 'active') : null
                             ),
                     ]),
 
@@ -129,8 +133,8 @@ class AcademicYearResource extends Resource
                                 Select::make('status')
                                     ->label('Status')
                                     ->options([
-                                        'upcoming'  => 'Akan Datang',
-                                        'active'    => 'Aktif / Berjalan',
+                                        'upcoming' => 'Akan Datang',
+                                        'active' => 'Aktif / Berjalan',
                                         'completed' => 'Selesai',
                                     ])
                                     ->default('upcoming')
@@ -181,17 +185,17 @@ class AcademicYearResource extends Resource
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
-                        'active'    => 'success',
-                        'upcoming'  => 'warning',
+                    ->color(fn (string $state): string => match ($state) {
+                        'active' => 'success',
+                        'upcoming' => 'warning',
                         'completed' => 'gray',
-                        default     => 'gray',
+                        default => 'gray',
                     })
-                    ->formatStateUsing(fn(string $state): string => match ($state) {
-                        'active'    => 'Aktif',
-                        'upcoming'  => 'Akan Datang',
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'active' => 'Aktif',
+                        'upcoming' => 'Akan Datang',
                         'completed' => 'Selesai',
-                        default     => $state,
+                        default => $state,
                     }),
 
                 IconColumn::make('is_active')
@@ -207,8 +211,8 @@ class AcademicYearResource extends Resource
                 Tables\Filters\SelectFilter::make('status')
                     ->label('Status')
                     ->options([
-                        'upcoming'  => 'Akan Datang',
-                        'active'    => 'Aktif',
+                        'upcoming' => 'Akan Datang',
+                        'active' => 'Aktif',
                         'completed' => 'Selesai',
                     ]),
             ])
@@ -224,25 +228,25 @@ class AcademicYearResource extends Resource
                     ->modalDescription('Akan dibuat tahun ajaran baru +1 tahun beserta semesternya.')
                     ->modalSubmitActionLabel('Ya, Duplikasi')
                     ->action(function (AcademicYear $record): void {
-                        $parts   = explode('/', $record->name);
-                        $newName = ($parts[0] + 1) . '/' . ($parts[1] + 1);
+                        $parts = explode('/', $record->name);
+                        $newName = ($parts[0] + 1).'/'.($parts[1] + 1);
 
                         $newYear = AcademicYear::create([
-                            'name'       => $newName,
+                            'name' => $newName,
                             'start_date' => $record->start_date->addYear(),
-                            'end_date'   => $record->end_date->addYear(),
-                            'is_active'  => false,
-                            'status'     => 'upcoming',
+                            'end_date' => $record->end_date->addYear(),
+                            'is_active' => false,
+                            'status' => 'upcoming',
                         ]);
 
                         foreach ($record->semesters as $semester) {
                             $newYear->semesters()->create([
-                                'name'       => str_replace($record->name, $newName, $semester->name),
-                                'semester'   => $semester->semester,
+                                'name' => str_replace($record->name, $newName, $semester->name),
+                                'semester' => $semester->semester,
                                 'start_date' => $semester->start_date->addYear(),
-                                'end_date'   => $semester->end_date->addYear(),
-                                'is_active'  => false,
-                                'status'     => 'upcoming',
+                                'end_date' => $semester->end_date->addYear(),
+                                'is_active' => false,
+                                'status' => 'upcoming',
                             ]);
                         }
                     }),
@@ -259,9 +263,9 @@ class AcademicYearResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => ListAcademicYears::route('/'),
+            'index' => ListAcademicYears::route('/'),
             'create' => CreateAcademicYear::route('/create'),
-            'edit'   => EditAcademicYear::route('/{record}/edit'),
+            'edit' => EditAcademicYear::route('/{record}/edit'),
         ];
     }
 }

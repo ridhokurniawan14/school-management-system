@@ -11,8 +11,8 @@ return new class extends Migration
         Schema::create('academic_semesters', function (Blueprint $table) {
             $table->id();
             $table->foreignId('academic_year_id')
-                  ->constrained('academic_years')
-                  ->cascadeOnDelete();
+                ->constrained('academic_years')
+                ->cascadeOnDelete();
             $table->string('name');                                         // "Semester Ganjil 2024/2025"
             $table->enum('semester', ['1', '2']);                           // 1 = Ganjil, 2 = Genap
             $table->date('start_date');

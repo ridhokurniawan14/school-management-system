@@ -11,20 +11,20 @@ return new class extends Migration
         Schema::create('classrooms', function (Blueprint $table) {
             $table->id();
             $table->foreignId('academic_year_id')
-                  ->constrained('academic_years')
-                  ->cascadeOnDelete();
+                ->constrained('academic_years')
+                ->cascadeOnDelete();
             $table->foreignId('competency_id')
-                  ->nullable()
-                  ->constrained('competencies')
-                  ->nullOnDelete();
+                ->nullable()
+                ->constrained('competencies')
+                ->nullOnDelete();
             $table->string('name');                          // "XII RPL 1"
             $table->enum('grade', ['10', '11', '12']);       // tingkat kelas
             $table->string('room_number')->nullable();        // ruang fisik: "Ruang 12", "Lab RPL"
             $table->unsignedSmallInteger('capacity')->default(36);
             $table->foreignId('homeroom_teacher_id')
-                  ->nullable()
-                  ->constrained('teachers')
-                  ->nullOnDelete();                          // wali kelas
+                ->nullable()
+                ->constrained('teachers')
+                ->nullOnDelete();                          // wali kelas
             $table->boolean('is_active')->default(true);
             $table->timestamps();
 
@@ -36,14 +36,14 @@ return new class extends Migration
         Schema::create('classroom_students', function (Blueprint $table) {
             $table->id();
             $table->foreignId('classroom_id')
-                  ->constrained('classrooms')
-                  ->cascadeOnDelete();
+                ->constrained('classrooms')
+                ->cascadeOnDelete();
             $table->foreignId('student_id')
-                  ->constrained('students')
-                  ->cascadeOnDelete();
+                ->constrained('students')
+                ->cascadeOnDelete();
             $table->foreignId('academic_year_id')
-                  ->constrained('academic_years')
-                  ->cascadeOnDelete();
+                ->constrained('academic_years')
+                ->cascadeOnDelete();
             $table->enum('status', ['active', 'moved', 'dropped'])->default('active');
             $table->timestamps();
 

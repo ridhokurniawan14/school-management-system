@@ -6,19 +6,16 @@ use App\Filament\Resources\Majors\Pages\CreateMajor;
 use App\Filament\Resources\Majors\Pages\EditMajor;
 use App\Filament\Resources\Majors\Pages\ListMajors;
 use App\Models\Major;
-use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -28,10 +25,15 @@ class MajorResource extends Resource
     protected static ?string $model = Major::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
+
     protected static string|\UnitEnum|null $navigationGroup = 'Akademik';
+
     protected static ?string $navigationLabel = 'Bidang Keahlian';
+
     protected static ?int $navigationSort = 1;
+
     protected static ?string $modelLabel = 'Bidang Keahlian';
+
     protected static ?string $pluralModelLabel = 'Bidang Keahlian';
 
     public static function form(Schema $schema): Schema
@@ -107,7 +109,7 @@ class MajorResource extends Resource
             ]);
     }
 
-    public static function table(\Filament\Tables\Table $table): Table
+    public static function table(Table $table): Table
     {
         return $table
             ->columns([
@@ -158,9 +160,9 @@ class MajorResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => ListMajors::route('/'),
+            'index' => ListMajors::route('/'),
             'create' => CreateMajor::route('/create'),
-            'edit'   => EditMajor::route('/{record}/edit'),
+            'edit' => EditMajor::route('/{record}/edit'),
         ];
     }
 }

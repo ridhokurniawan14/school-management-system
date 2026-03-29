@@ -28,17 +28,17 @@ return new class extends Migration
             $table->enum('status', ['active', 'graduated', 'transferred', 'dropped'])->default('active');
             $table->year('entry_year');                      // tahun masuk
             $table->foreignId('competency_id')
-                  ->nullable()
-                  ->constrained('competencies')
-                  ->nullOnDelete();                          // jurusan siswa
+                ->nullable()
+                ->constrained('competencies')
+                ->nullOnDelete();                          // jurusan siswa
             $table->timestamps();
         });
 
         Schema::create('student_parents', function (Blueprint $table) {
             $table->id();
             $table->foreignId('student_id')
-                  ->constrained('students')
-                  ->cascadeOnDelete();
+                ->constrained('students')
+                ->cascadeOnDelete();
             $table->enum('relationship', ['father', 'mother', 'guardian']); // ayah, ibu, wali
             $table->string('full_name');
             $table->string('nik', 16)->nullable();           // Nomor Induk Kependudukan

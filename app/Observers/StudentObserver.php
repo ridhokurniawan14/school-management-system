@@ -30,9 +30,9 @@ class StudentObserver
         // Buatkan akun User untuk login siswa
         if ($student->email && ! $student->user_id ?? true) {
             $user = User::create([
-                'name'     => $student->full_name,
-                'email'    => $student->email,
-                'password' => Hash::make('smkpgri1@' . now()->year),
+                'name' => $student->full_name,
+                'email' => $student->email,
+                'password' => Hash::make('smkpgri1@'.now()->year),
             ]);
 
             // Jika tabel students punya kolom user_id, uncomment ini:
@@ -59,8 +59,8 @@ class StudentObserver
 
         // Hapus dokumen yang dihapus dari JSON
         if ($student->wasChanged('documents')) {
-            $oldDocs  = $student->getOriginal('documents') ?? [];
-            $newDocs  = $student->documents ?? [];
+            $oldDocs = $student->getOriginal('documents') ?? [];
+            $newDocs = $student->documents ?? [];
             $oldFiles = collect($oldDocs)->pluck('file')->filter()->toArray();
             $newFiles = collect($newDocs)->pluck('file')->filter()->toArray();
 
@@ -88,7 +88,7 @@ class StudentObserver
         // Hapus semua berkas dokumen
         if ($student->documents) {
             foreach ($student->documents as $doc) {
-                if (!empty($doc['file'])) {
+                if (! empty($doc['file'])) {
                     Storage::disk('public')->delete($doc['file']);
                 }
             }
@@ -107,7 +107,7 @@ class StudentObserver
      */
     public static function generateEmail(string $fullName): string
     {
-        $domain    = 'smkpgri1giri.sch.id';
+        $domain = 'smkpgri1giri.sch.id';
         $firstName = Str::lower(
             Str::ascii(
                 explode(' ', trim($fullName))[0]
@@ -116,12 +116,12 @@ class StudentObserver
 
         // Bersihkan karakter non-alphanumeric
         $firstName = preg_replace('/[^a-z0-9]/', '', $firstName);
-        $email     = $firstName . '@' . $domain;
+        $email = $firstName.'@'.$domain;
 
         // Cek duplikat, tambah angka jika sudah ada
         $counter = 2;
         while (Student::where('email', $email)->exists() || User::where('email', $email)->exists()) {
-            $email = $firstName . $counter . '@' . $domain;
+            $email = $firstName.$counter.'@'.$domain;
             $counter++;
         }
 

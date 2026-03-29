@@ -8,6 +8,7 @@ use App\Filament\Resources\Staff\Pages\CreateStaff;
 use App\Filament\Resources\Staff\Pages\EditStaff;
 use App\Filament\Resources\Staff\Pages\ListStaff;
 use App\Models\Teacher;
+use Carbon\Carbon;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -16,8 +17,8 @@ use Filament\Actions\ImportAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
@@ -30,6 +31,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportAction;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 use pxlrbt\FilamentExcel\Columns\Column;
@@ -42,14 +44,20 @@ class StaffResource extends Resource
     protected static ?string $model = Teacher::class;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-briefcase';
+
     protected static string|\UnitEnum|null $navigationGroup = 'SDM';
+
     protected static ?string $navigationLabel = 'Data Staff';
+
     protected static ?int $navigationSort = 2;
+
     protected static ?string $modelLabel = 'Staff';
+
     protected static ?string $pluralModelLabel = 'Data Staff';
+
     protected static ?string $slug = 'staff';
 
-    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->where('role', 'staff');
     }
@@ -79,11 +87,11 @@ class StaffResource extends Resource
                                         Select::make('role')
                                             ->label('Jabatan')
                                             ->options([
-                                                'staff'     => 'Staff / TU',
-                                                'admin'     => 'Admin Sistem',
+                                                'staff' => 'Staff / TU',
+                                                'admin' => 'Admin Sistem',
                                                 'bendahara' => 'Bendahara / Petugas BPS',
-                                                'security'  => 'Keamanan',
-                                                'cleaning'  => 'Kebersihan',
+                                                'security' => 'Keamanan',
+                                                'cleaning' => 'Kebersihan',
                                                 'librarian' => 'Pustakawan',
                                             ])
                                             ->default('staff')
@@ -93,7 +101,7 @@ class StaffResource extends Resource
                                         Select::make('gender')
                                             ->label('Jenis Kelamin')
                                             ->options([
-                                                'male'   => 'Laki-laki',
+                                                'male' => 'Laki-laki',
                                                 'female' => 'Perempuan',
                                             ])
                                             ->required(),
@@ -101,11 +109,11 @@ class StaffResource extends Resource
                                         Select::make('religion')
                                             ->label('Agama')
                                             ->options([
-                                                'islam'    => 'Islam',
-                                                'kristen'  => 'Kristen',
-                                                'katolik'  => 'Katolik',
-                                                'hindu'    => 'Hindu',
-                                                'budha'    => 'Buddha',
+                                                'islam' => 'Islam',
+                                                'kristen' => 'Kristen',
+                                                'katolik' => 'Katolik',
+                                                'hindu' => 'Hindu',
+                                                'budha' => 'Buddha',
                                                 'konghucu' => 'Konghucu',
                                             ]),
 
@@ -136,10 +144,10 @@ class StaffResource extends Resource
                                         Select::make('employment_status')
                                             ->label('Status Kepegawaian')
                                             ->options([
-                                                'pns'     => 'PNS',
-                                                'p3k'     => 'P3K',
+                                                'pns' => 'PNS',
+                                                'p3k' => 'P3K',
                                                 'honorer' => 'Honorer',
-                                                'gty'     => 'GTY',
+                                                'gty' => 'GTY',
                                             ])
                                             ->default('honorer')
                                             ->required(),
@@ -225,7 +233,7 @@ class StaffResource extends Resource
                     ->label('')
                     ->circular()
                     ->disk('public')
-                    ->defaultImageUrl(fn($record) => 'https://ui-avatars.com/api/?name=' . urlencode($record->full_name) . '&color=185FA5&background=E6F1FB'),
+                    ->defaultImageUrl(fn ($record) => 'https://ui-avatars.com/api/?name='.urlencode($record->full_name).'&color=185FA5&background=E6F1FB'),
 
                 TextColumn::make('full_name')
                     ->label('Nama Lengkap')
@@ -242,20 +250,20 @@ class StaffResource extends Resource
                 TextColumn::make('role')
                     ->label('Jabatan')
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
+                    ->color(fn (string $state): string => match ($state) {
                         'bendahara' => 'warning',
-                        'admin'     => 'danger',
-                        'staff'     => 'info',
-                        default     => 'gray',
+                        'admin' => 'danger',
+                        'staff' => 'info',
+                        default => 'gray',
                     })
-                    ->formatStateUsing(fn(string $state): string => match ($state) {
-                        'staff'     => 'Staff / TU',
-                        'admin'     => 'Admin Sistem',
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'staff' => 'Staff / TU',
+                        'admin' => 'Admin Sistem',
                         'bendahara' => 'Bendahara / BPS',
-                        'security'  => 'Keamanan',
-                        'cleaning'  => 'Kebersihan',
+                        'security' => 'Keamanan',
+                        'cleaning' => 'Kebersihan',
                         'librarian' => 'Pustakawan',
-                        default     => $state,
+                        default => $state,
                     }),
 
                 TextColumn::make('phone')
@@ -270,19 +278,19 @@ class StaffResource extends Resource
                 TextColumn::make('employment_status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn(string $state): string => match ($state) {
-                        'pns'     => 'success',
-                        'p3k'     => 'info',
+                    ->color(fn (string $state): string => match ($state) {
+                        'pns' => 'success',
+                        'p3k' => 'info',
                         'honorer' => 'info',
-                        'gty'     => 'success',
-                        default   => 'gray',
+                        'gty' => 'success',
+                        default => 'gray',
                     })
-                    ->formatStateUsing(fn(string $state): string => match ($state) {
-                        'pns'     => 'PNS',
-                        'p3k'     => 'P3K',
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
+                        'pns' => 'PNS',
+                        'p3k' => 'P3K',
                         'honorer' => 'Honorer',
-                        'gty'     => 'GTY',
-                        default   => $state,
+                        'gty' => 'GTY',
+                        default => $state,
                     })
                     ->toggleable(),
 
@@ -299,21 +307,21 @@ class StaffResource extends Resource
                 SelectFilter::make('role')
                     ->label('Jabatan')
                     ->options([
-                        'staff'     => 'Staff / TU',
-                        'admin'     => 'Admin Sistem',
+                        'staff' => 'Staff / TU',
+                        'admin' => 'Admin Sistem',
                         'bendahara' => 'Bendahara / BPS',
-                        'security'  => 'Keamanan',
-                        'cleaning'  => 'Kebersihan',
+                        'security' => 'Keamanan',
+                        'cleaning' => 'Kebersihan',
                         'librarian' => 'Pustakawan',
                     ]),
 
                 SelectFilter::make('employment_status')
                     ->label('Status Kepegawaian')
                     ->options([
-                        'pns'     => 'PNS',
-                        'p3k'     => 'P3K',
+                        'pns' => 'PNS',
+                        'p3k' => 'P3K',
                         'honorer' => 'Honorer',
-                        'gty'     => 'GTY',
+                        'gty' => 'GTY',
                     ]),
 
                 TernaryFilter::make('is_active')
@@ -333,7 +341,7 @@ class StaffResource extends Resource
                         ->exports([
                             ExcelExport::make()
                                 ->withColumns(self::getExportColumns())
-                                ->withFilename('data-staff-' . now()->format('Y-m-d')),
+                                ->withFilename('data-staff-'.now()->format('Y-m-d')),
                         ]),
                 ]),
             ])
@@ -348,7 +356,7 @@ class StaffResource extends Resource
                     ->exports([
                         ExcelExport::make()
                             ->withColumns(self::getExportColumns())
-                            ->withFilename('data-staff-' . now()->format('Y-m-d')),
+                            ->withFilename('data-staff-'.now()->format('Y-m-d')),
                     ])
                     ->label('Export Data')
                     ->icon('heroicon-o-arrow-up-tray'),
@@ -363,56 +371,56 @@ class StaffResource extends Resource
             Column::make('nuptk')->heading('NUPTK'),
             Column::make('role')
                 ->heading('Jabatan')
-                ->formatStateUsing(fn($state) => match ($state) {
-                    'staff'     => 'Staff / TU',
-                    'admin'     => 'Admin Sistem',
+                ->formatStateUsing(fn ($state) => match ($state) {
+                    'staff' => 'Staff / TU',
+                    'admin' => 'Admin Sistem',
                     'bendahara' => 'Bendahara / BPS',
-                    'security'  => 'Keamanan',
-                    'cleaning'  => 'Kebersihan',
+                    'security' => 'Keamanan',
+                    'cleaning' => 'Kebersihan',
                     'librarian' => 'Pustakawan',
-                    default     => $state,
+                    default => $state,
                 }),
             Column::make('gender')
                 ->heading('Jenis Kelamin')
-                ->formatStateUsing(fn($state) => match ($state) {
-                    'male'   => 'Laki-laki',
+                ->formatStateUsing(fn ($state) => match ($state) {
+                    'male' => 'Laki-laki',
                     'female' => 'Perempuan',
-                    default  => $state,
+                    default => $state,
                 }),
             Column::make('religion')
                 ->heading('Agama')
-                ->formatStateUsing(fn($state) => ucfirst($state ?? '-')),
+                ->formatStateUsing(fn ($state) => ucfirst($state ?? '-')),
             Column::make('birth_place')->heading('Tempat Lahir'),
             Column::make('birth_date')
                 ->heading('Tanggal Lahir')
-                ->formatStateUsing(fn($state) => $state ? \Carbon\Carbon::parse($state)->format('d/m/Y') : '-'),
+                ->formatStateUsing(fn ($state) => $state ? Carbon::parse($state)->format('d/m/Y') : '-'),
             Column::make('employment_status')
                 ->heading('Status Kepegawaian')
-                ->formatStateUsing(fn($state) => match ($state) {
-                    'pns'     => 'PNS',
-                    'p3k'     => 'P3K',
+                ->formatStateUsing(fn ($state) => match ($state) {
+                    'pns' => 'PNS',
+                    'p3k' => 'P3K',
                     'honorer' => 'Honorer',
-                    'gty'     => 'GTY',
-                    default   => $state,
+                    'gty' => 'GTY',
+                    default => $state,
                 }),
             Column::make('join_date')
                 ->heading('Tanggal Mulai Bertugas')
-                ->formatStateUsing(fn($state) => $state ? \Carbon\Carbon::parse($state)->format('d/m/Y') : '-'),
+                ->formatStateUsing(fn ($state) => $state ? Carbon::parse($state)->format('d/m/Y') : '-'),
             Column::make('phone')->heading('No. HP'),
             Column::make('email')->heading('Email'),
             Column::make('address')->heading('Alamat'),
             Column::make('is_active')
                 ->heading('Status Aktif')
-                ->formatStateUsing(fn($state) => $state ? 'Aktif' : 'Tidak Aktif'),
+                ->formatStateUsing(fn ($state) => $state ? 'Aktif' : 'Tidak Aktif'),
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => ListStaff::route('/'),
+            'index' => ListStaff::route('/'),
             'create' => CreateStaff::route('/create'),
-            'edit'   => EditStaff::route('/{record}/edit'),
+            'edit' => EditStaff::route('/{record}/edit'),
         ];
     }
 }

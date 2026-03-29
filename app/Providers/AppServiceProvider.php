@@ -24,7 +24,7 @@ class AppServiceProvider extends ServiceProvider
     {
         AcademicYear::observe(AcademicYearObserver::class);
         // Pastikan folder tmp/imports selalu ada
-        if (!Storage::disk('local')->exists('tmp/imports')) {
+        if (! Storage::disk('local')->exists('tmp/imports')) {
             Storage::disk('local')->makeDirectory('tmp/imports');
         }
     }

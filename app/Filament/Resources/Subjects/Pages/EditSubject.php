@@ -11,6 +11,7 @@ use Filament\Resources\Pages\EditRecord;
 class EditSubject extends EditRecord
 {
     protected static string $resource = SubjectResource::class;
+
     protected static ?string $title = 'Edit Mata Pelajaran';
 
     protected function getHeaderActions(): array
@@ -62,7 +63,7 @@ class EditSubject extends EditRecord
         // 🔥 1. Kumpulkan semua ID KKM yang MASIH ADA di layar (tidak dihapus user)
         $submittedKkmIds = [];
         foreach ($allKkmsList as $item) {
-            if (!empty($item['id'])) {
+            if (! empty($item['id'])) {
                 $submittedKkmIds[] = $item['id'];
             }
         }
@@ -73,7 +74,7 @@ class EditSubject extends EditRecord
             ->delete();
 
         // 3. Simpan atau Update KKM yang masih tersisa di layar
-        if (!empty($allKkmsList)) {
+        if (! empty($allKkmsList)) {
             foreach ($allKkmsList as $item) {
                 if (empty($item['classroom_id']) || empty($item['academic_semester_id'])) {
                     continue;
@@ -81,13 +82,13 @@ class EditSubject extends EditRecord
 
                 SubjectKkm::updateOrCreate(
                     [
-                        'subject_id'           => $this->record->id,
-                        'classroom_id'         => $item['classroom_id'],
+                        'subject_id' => $this->record->id,
+                        'classroom_id' => $item['classroom_id'],
                         'academic_semester_id' => $item['academic_semester_id'],
                     ],
                     [
                         'academic_year_id' => $item['academic_year_id'],
-                        'kkm'              => $item['kkm'],
+                        'kkm' => $item['kkm'],
                     ]
                 );
             }

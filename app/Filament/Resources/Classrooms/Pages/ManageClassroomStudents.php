@@ -35,7 +35,7 @@ class ManageClassroomStudents extends Page implements HasTable
 
     public function getTitle(): string
     {
-        return 'Siswa — ' . $this->record->name;
+        return 'Siswa — '.$this->record->name;
     }
 
     public function table(Table $table): Table
@@ -67,17 +67,17 @@ class ManageClassroomStudents extends Page implements HasTable
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn($state) => match ($state) {
-                        'active'  => 'success',
-                        'moved'   => 'warning',
+                    ->color(fn ($state) => match ($state) {
+                        'active' => 'success',
+                        'moved' => 'warning',
                         'dropped' => 'danger',
-                        default   => 'gray',
+                        default => 'gray',
                     })
-                    ->formatStateUsing(fn($state) => match ($state) {
-                        'active'  => 'Aktif',
-                        'moved'   => 'Pindah',
+                    ->formatStateUsing(fn ($state) => match ($state) {
+                        'active' => 'Aktif',
+                        'moved' => 'Pindah',
                         'dropped' => 'Keluar',
-                        default   => $state,
+                        default => $state,
                     }),
             ])
             ->headerActions([
@@ -100,8 +100,8 @@ class ManageClassroomStudents extends Page implements HasTable
                                     ->whereNotIn('id', $existingStudentIds)
                                     ->orderBy('full_name')
                                     ->get()
-                                    ->mapWithKeys(fn($s) => [
-                                        $s->id => $s->nis . ' — ' . $s->full_name,
+                                    ->mapWithKeys(fn ($s) => [
+                                        $s->id => $s->nis.' — '.$s->full_name,
                                     ]);
                             })
                             ->multiple()
@@ -112,11 +112,11 @@ class ManageClassroomStudents extends Page implements HasTable
                     ->action(function (array $data): void {
                         foreach ($data['student_ids'] as $studentId) {
                             ClassroomStudent::updateOrCreate([
-                                'student_id'       => $studentId,
+                                'student_id' => $studentId,
                                 'academic_year_id' => $this->record->academic_year_id,
                             ], [
                                 'classroom_id' => $this->record->id,
-                                'status'       => 'active',
+                                'status' => 'active',
                             ]);
                         }
 
